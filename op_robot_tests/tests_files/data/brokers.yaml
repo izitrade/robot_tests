@@ -503,7 +503,7 @@ aladdin:
         viewer:         aladdin_Viewer
     timeout_on_wait: 1
 izi:
-    homepage: "https://test.izi.trade"
+    homepage: "https://prozorro:EUKAJxV5nZhVRKAL@test.izi.trade"
     backendUrl: "https://api-test.izi.trade"
     intervals:
         default:
@@ -511,8 +511,8 @@ izi:
             tender:  [0, 10]
             accelerator: 1440
         belowThreshold:
-            enquiry: [0, 20]
-            tender:  [0, 10]
+            enquiry: [0, 1]
+            tender:  [0, 5]
             accelerator: 300
         openua:
             tender:  [0, 20]
