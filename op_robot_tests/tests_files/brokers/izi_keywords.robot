@@ -179,12 +179,12 @@ izi знайти на сторінці тендера поле description_ru
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле value.amount
-  ${numberTextField}=  Get Text  css=.tender-details .tender-details__price span
+  ${numberTextField}=  Execute Javascript  return $(".tender-details__price-val").first().text().trim()
   ${value}=  izi convert izi number to prozorro number  ${numberTextField}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле value.valueAddedTaxIncluded
-  ${isTaxIncluded}=  Execute Javascript  return !!$('.tender-details:contains("з ПДВ")').length
+  ${isTaxIncluded}=  Execute Javascript  return $(".tender-details__price-vat").first().text().trim() == "з ПДВ"
   [Return]  ${isTaxIncluded}
 
 izi знайти на сторінці тендера поле tenderID
@@ -289,7 +289,7 @@ izi знайти на сторінці тендера поле enquiryPeriod.end
 izi знайти на сторінці тендера поле minimalStep.amount
   ${lotsCount}=  izi get page lots count
   Run Keyword And Return If  ${lotsCount} > 0  izi знайти на сторінці лотів мінімальний minimalStep.amount
-  ${numberTextField}=  Get Text  jquery=tender tender-lot-info:first notes li strong:contains(Мінімальний крок аукциону:) + span
+  ${numberTextField}=  Get Text  jquery=tender tender-lot-info:first notes li strong:contains(Мінімальний крок аукціону:) + span
   ${value}=  izi convert izi number to prozorro number  ${numberTextField}
   [Return]  ${value}
 
@@ -366,15 +366,15 @@ izi знайти на сторінці тендера поле causeDescription
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле value.currency
-  ${value}=  Execute Javascript  return $(".tender-details__price").first().contents().eq(1).text()
+  ${value}=  Execute Javascript  return $(".tender-details__price-curr").text().trim()
   ${value}=  convert_izi_string_to_prozorro_string  ${value.split(' ')[0]}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле description предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
   ...  wrapperElSelector=items-info .items-info__row
-  ...  elThatHasObjectIdSelector=.items-info__name span
-  ...  elThatHasValueSelector=.items-info__name span
+  ...  elThatHasObjectIdSelector=.items-info__name .items-info__name-desc
+  ...  elThatHasValueSelector=.items-info__name .items-info__name-desc
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле title нецінового показника ${feature_id}
@@ -825,25 +825,25 @@ izi знайти index лоту за lotObjectId
 
 izi знайти на сторінці тендера поле title документу ${doc_id}
   ${value}=  izi find objectId element value  objectId=${doc_id}
-  ...  wrapperElSelector=.documents-versions__row
-  ...  elThatHasObjectIdSelector=.documents-versions__name a:first
-  ...  elThatHasValueSelector=.documents-versions__name a:first
+  ...  wrapperElSelector=documents-versions .documents-versions__row
+  ...  elThatHasObjectIdSelector=.documents-versions__name__url
+  ...  elThatHasValueSelector=.documents-versions__name__url
   [Return]  ${value}
 
 izi знайти на сторінці лоту ${index} поле title документу ${doc_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${doc_id}
   ...  wrapperElSelector=lot-content documents-versions .documents-versions__row
-  ...  elThatHasObjectIdSelector=.documents-versions__name a:first
-  ...  elThatHasValueSelector=.documents-versions__name a:first
+  ...  elThatHasObjectIdSelector=.documents-versions__name__url
+  ...  elThatHasValueSelector=.documents-versions__name__url
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле ulr документу ${doc_id}
   ${attribute}=  Set Variable  href
   ${value}=  Run Keyword  izi find objectId element attribute  attribute=${attribute}  objectId=${doc_id}
-  ...  wrapperElSelector=tender-lot .documents-versions__row
-  ...  elThatHasObjectIdSelector=.documents-versions__name a:first
-  ...  elThatHasValueSelector=.documents-versions__name a:first
+  ...  wrapperElSelector=tender-lot documents-versions .documents-versions__row
+  ...  elThatHasObjectIdSelector=.documents-versions__name__url
+  ...  elThatHasValueSelector=.documents-versions__doc-download
   [Return]  ${value}
 
 izi знайти на сторінці лоту ${index} поле ulr документу ${doc_id}
@@ -851,8 +851,8 @@ izi знайти на сторінці лоту ${index} поле ulr докум
   ${attribute}=  Set Variable  href
   ${value}=  Run Keyword  izi find objectId element attribute  attribute=${attribute}  objectId=${doc_id}
   ...  wrapperElSelector=lot-content documents-versions .documents-versions__row
-  ...  elThatHasObjectIdSelector=.documents-versions__name a:first
-  ...  elThatHasValueSelector=.documents-versions__name a:first
+  ...  elThatHasObjectIdSelector=.documents-versions__name__url
+  ...  elThatHasValueSelector=.documents-versions__doc-download
   [Return]  ${value}
 
 izi знайти поле title документу ${doc_id} вимоги ${complaintID}
@@ -1749,4 +1749,29 @@ izi знайти на сторінці тендера поле funders[${index}]
 
 izi знайти на сторінці тендера поле funders[${index}].identifier.scheme
   ${value}=  Execute Javascript  return $('funders-info .funders-info__funder-name:eq(${index})~info-popup .info-popup__popup p strong:contains(Схема Ідентифікації)+span').text()
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле milestones[${index}].code
+  ${value}=   Execute Javascript  return $('.milestones-info__milestone-row').eq(${index}).attr('przMilestoneCode')
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле milestones[${index}].title
+  ${value}=   Execute Javascript  return $('.milestones-info__milestone-row').eq(${index}).attr('przMilestoneTitle')
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле milestones[${index}].percentage
+  ${value}=   Execute Javascript  return +$('.milestones-info__milestone-row').eq(${index}).attr('przMilestonePercentage')
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле milestones[${index}].duration.days
+  ${value}=   Execute Javascript  return +$('.milestones-info__milestone-row').eq(${index}).attr('przMilestoneDurationDays')
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле milestones[${index}].duration.type
+  ${value}=   Execute Javascript  return $('.milestones-info__milestone-row').eq(${index}).attr('przMilestoneDurationType')
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле mainProcurementCategory
+  ${value}=   Execute Javascript  return $('.tender-info-notes__procurementCategory .notes__value').text().trim()
+	${value}=   izi_service.get_prozorro_procurementCategory_by_izi_procurementCategoryText	${value}
   [Return]  ${value}

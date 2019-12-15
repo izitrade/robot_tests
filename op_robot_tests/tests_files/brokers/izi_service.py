@@ -99,3 +99,12 @@ def get_prozorro_pmtype_by_izi_pmtext(pmtext):
         u"Звіт про укладений договір": u"reporting",
         u"Еско процедура": u"esco"
     }.get(pmtext)
+
+
+def get_prozorro_procurementCategory_by_izi_procurementCategoryText(text):
+    return {
+        u"Товари": u"goods",
+        u"Послуги": u"services",
+        u"Роботи": u"works",
+
+    }.get(text)
