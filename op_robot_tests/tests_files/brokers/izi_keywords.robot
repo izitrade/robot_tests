@@ -297,7 +297,7 @@ izi знайти на сторінці тендера поле minimalStep.amoun
   [Return]  ${value}
 
 izi get lot minimalStep string
-  ${minimalStepString}=  Execute Javascript  return $('.tender-section tender-lot-info notes li:has(strong:contains(Мінімальний крок аукциону:)) span').text().trim()
+  ${minimalStepString}=  Execute Javascript  return $('.tender-lot tender-lot-info notes li:has(strong:contains(Мінімальний крок аукціону:)) span').text().trim()
   [Return]  ${minimalStepString}
 
 izi знайти на сторінці лотів мінімальний minimalStep.amount
@@ -595,7 +595,7 @@ izi знайти на сторінці лоту ${index} поле description п
   ${value}=  izi find objectId element value  objectId=${item_id}
   ...  wrapperElSelector=items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__name span
+  ...  elThatHasValueSelector=.items-info__name-desc
   [Return]  ${value}
 
 izi знайти на сторінці лоту ${index} поле deliveryDate.startDate предмету ${item_id}
@@ -1790,4 +1790,9 @@ izi знайти на сторінці тендера поле milestones[${inde
 izi знайти на сторінці тендера поле mainProcurementCategory
   ${value}=   Execute Javascript  return $('.tender-info-notes__procurementCategory .notes__value').text().trim()
 	${value}=   izi_service.get_prozorro_procurementCategory_by_izi_procurementCategoryText	${value}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле lots[${lotIndex}].title
+  izi обрати лот ${lotIndex}
+  ${value}=   Execute Javascript  return $('.tender-lot .tender-lot-description__title').first().text().trim()
   [Return]  ${value}

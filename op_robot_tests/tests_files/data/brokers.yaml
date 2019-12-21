@@ -517,8 +517,8 @@ izi:
             tender:  [0, 10]
             accelerator: 1440
         belowThreshold:
-            enquiry: [0, 5]
-            tender:  [0, 4]
+            enquiry: [0, 4]
+            tender:  [0, 6]
             accelerator: 300
         openua:
             tender:  [0, 20]
@@ -537,7 +537,7 @@ izi:
         provider:       izi_provider
         provider1:      izi_provider1
         viewer:         izi_viewer
-    timeout_on_wait: 0
+    timeout_on_wait: 5
 ukrtender:
     intervals:
         default:
