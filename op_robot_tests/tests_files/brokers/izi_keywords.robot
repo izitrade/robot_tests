@@ -2,6 +2,7 @@
 Library  Selenium2Library
 Library  izi_service.py
 Library  String
+Resource  openprocurement_client.robot
 
 *** Keywords ***
 izi get awardId by awardIndex
@@ -89,6 +90,7 @@ izi get page lots count
 
 izi get tenderId by tenderUaId
   [Arguments]  ${tenderUaId}
+  Log  ${ROLE}
   ${tenderOwner}=  Run Keyword If  '${ROLE}' != 'tender_owner'  Set Variable  ${BROKERS.Quinta.roles.tender_owner}
   ...  ELSE  Set Variable  ${BROKERS['${BROKER}'].roles.tender_owner}
   Run Keyword And Return  openprocurement_client.Отримати internal id по UAid  ${tenderOwner}  ${tenderUaId}
@@ -179,6 +181,7 @@ izi знайти на сторінці тендера поле description_ru
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле value.amount
+  Sleep   3
   ${numberTextField}=  Execute Javascript  return $(".tender-details__price-val").first().text().trim()
   ${value}=  izi convert izi number to prozorro number  ${numberTextField}
   [Return]  ${value}
@@ -366,8 +369,9 @@ izi знайти на сторінці тендера поле causeDescription
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле value.currency
+  Sleep   3
   ${value}=  Execute Javascript  return $(".tender-details__price-curr").text().trim()
-  ${value}=  convert_izi_string_to_prozorro_string  ${value.split(' ')[0]}
+  ${value}=  get_prozorro_curr_by_izi_curr  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле description предмету ${item_id}
@@ -531,12 +535,13 @@ izi знайти на сторінці тендера поле unit.name пре�
   ...  elThatHasValueSelector=.items-info__number span:eq(1)
   [Return]  ${value}
 
-not required by prozorro
+#not required by prozorro
 izi знайти на сторінці тендера поле unit.code предмету ${item_id}
-  ${value}=  izi find objectId element value  objectId=${item_id}
+  ${attribute}=  Set Variable  przItemUnitCode
+  ${value}=  izi find objectId element attribute  attribute=${attribute}  objectId=${item_id}
   ...  wrapperElSelector=items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__number span:eq(2)
+  ...  elThatHasValueSelector=.items-info__uname
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле description нецінового показника ${feature_id}
@@ -758,7 +763,7 @@ izi задати запитання на предмет
 
 izi question-form open form
   Click Element  jquery=tender-tabs izi-tabs-2 .izi-tabs a:nth-child(3)
-  Click Button  jquery=tender-tabs izi-tabs-2 questions .pretense-create__note button
+  Click Button  jquery=tender-tabs izi-tabs-2 questions .questions__ask-btn
 
 izi question-form check lot
   [Arguments]  ${lotObjectId}
@@ -865,24 +870,33 @@ izi знайти поле title документу ${doc_id} вимоги ${comp
   ...  elThatHasValueSelector=.pretense-row__more-info .pretense-phase__files .pretense-phase__list a
   [Return]  ${value}
 
-izi знайти на сторінці тендера поле contracts[0].status
-  Execute Javascript  window.scroll(45,841)
-  Sleep  2
-  ${value}=  Execute Javascript  return $("contract-info .contract-info__for-status p:has(strong:contains(Статус договору:)) span").text()
-  ${value}=  Get Line  ${value}  1
-  ${value}=  Get Substring  ${value}  24
-  ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
+izi знайти на сторінці тендера поле contracts[${index}].status
+  Sleep   3
+  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__status").text().trim()
+  ${value}=  convert_izi_string_to_prozorro_string  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле contracts[${index}].value.amount
+  Sleep   3
+  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__contract-value").text().trim()
+  ${value}=  izi convert izi number to prozorro number  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле contracts[${index}].value.amountNet
+  Sleep   3
+  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__contract-value-net").text().trim()
+  ${value}=  izi convert izi number to prozorro number  ${value}
   [Return]  ${value}
 
 izi claim-submit-form open form
   [Arguments]  ${award_index}=${None}
   Run Keyword And Return If  '${award_index}'!='${None}'  izi award-claim-submit-form open form
   Click Element  jquery=tender-tabs izi-tabs-2 .izi-tabs a:nth-child(2)
-  Click Button  jquery=claims tender-pretense-create .btn_11
+  Click Button  jquery=claims tender-pretense-create .pretense-create__add-pretense-btn
 
 izi award-claim-submit-form open form
   Click Element  jquery=tender-tabs izi-tabs-2 .izi-tabs a:nth-child(2)
-  Click Button  jquery=claims award-pretense-create .btn_11
+  Click Button  jquery=claims award-pretense-create .pretense-create__add-pretense-btn
 
 izi claim-submit-form fill data
   [Arguments]  ${claim}  ${award_index}=${None}
@@ -1182,7 +1196,7 @@ izi bid-submit-form open form
 izi bid-submit-form close submit-form by clicking X
   ${isOpened}=  Execute Javascript  return !!$('.bid-submit fullscreen-popup.fullscreen-popup__opened').length
   Return From Keyword If  '${isOpened}' == 'False'
-  Click Element  jquery=.bid-submit fullscreen-popup .popup__close:first
+  Click Element  jquery=.bid-submit > fullscreen-popup > .fullscreen-popup__wrap > .fullscreen-popup__content > .popup__close
   Run Keyword And Ignore Error    Click Button      jquery=.bid-submit-1 .fullscreen-popup__opened .fullscreen-popup__content > .action-dialog-popup .btn_12
   Wait Until Element Is Not Visible  jquery=.bid-submit fullscreen-popup
 
@@ -1228,9 +1242,9 @@ izi bid-submit-form add document new version
   ${docId}=  Run Keyword  izi find objectId element attribute
   ...  attribute=docId
   ...  objectId=${docObjectId}
-  ...  wrapperElSelector=${documentManageSelector} documents-view .documents-view__documents-row
-  ...  elThatHasObjectIdSelector=.documents-view__documents-name a
-  ...  elThatHasValueSelector=.documents-view__documents-name
+  ...  wrapperElSelector=${documentManageSelector} documents-view .documents-view__row
+  ...  elThatHasObjectIdSelector=.documents-view__name
+  ...  elThatHasValueSelector=.documents-view__name-col
 
   ${docId}=  Get Variable Value  ${IZI_TMP_DICT['${docObjectId}']}  ${docId}
   Run Keyword And Return If  '${docId}' == '${None}'  Fail
@@ -1250,9 +1264,9 @@ izi bid-submit-form change document
   ${docId}=  Run Keyword  izi find objectId element attribute
   ...  attribute=docId
   ...  objectId=${docObjectId}
-  ...  wrapperElSelector=${documentManageSelector} documents-view .documents-view__documents-row
-  ...  elThatHasObjectIdSelector=.documents-view__documents-name a
-  ...  elThatHasValueSelector=.documents-view__documents-name
+  ...  wrapperElSelector=${documentManageSelector} documents-view .documents-view__row
+  ...  elThatHasObjectIdSelector=.documents-view__name
+  ...  elThatHasValueSelector=.documents-view__name-col
   ${docId}=  Get Variable Value  ${IZI_TMP_DICT['${docObjectId}']}  ${docId}
   Run Keyword And Return If  '${docId}' == '${None}'  Fail
   Set To Dictionary  ${IZI_TMP_DICT}  ${docObjectId}=${docId}
@@ -1272,19 +1286,19 @@ izi bid-submit-form change document
 
 izi document-manage get document url
   [Arguments]  ${docId}  ${documentManageSelector}
-  ${url}=  Execute Javascript  return $('${documentManageSelector} documents-view .documents-view__documents-row .documents-view__documents-name[docid=${docId}] a').attr('href')
+  ${url}=  Execute Javascript  return $('${documentManageSelector} documents-view .documents-view__row .documents-view__name-col[docid=${docId}] .documents-view__name').attr('href')
   [Return]  ${url}
 
 izi document-manage get document title
   [Arguments]  ${docId}  ${documentManageSelector}
-  ${title}=  Get Text  jquery=${documentManageSelector} documents-view .documents-view__documents-row .documents-view__documents-name[docid=${docId}] a
+  ${title}=  Get Text  jquery=${documentManageSelector} documents-view .documents-view__row .documents-view__name-col[docid=${docId}] .documents-view__name
   [Return]  ${title}
 
 izi document-manage add document new version
   [Arguments]  ${docId}  ${documentManageSelector}  ${filePath}  ${docType}  ${language}  ${confidentialityText}=${None}  ${isDescriptionDecision}=${None}
-  ${canAddDocument}=  Execute Javascript  return !!$('${documentManageSelector} documents-view .documents-view__documents-row .documents-view__documents-name[docId=${docId}]~.documents-view__documents-edit .documents-view__new-ver').length
+  ${canAddDocument}=  Execute Javascript  return !!$('${documentManageSelector} documents-view .documents-view__row .documents-view__name-col[docid=${docId}]~.documents-view__controls-col .documents-view__new-ver').length
   Run Keyword And Return If  '${canAddDocument}' == 'False'  Fail
-  Choose File  jquery=${documentManageSelector} documents-view .documents-view__documents-row .documents-view__documents-name[docId=${docId}]~.documents-view__documents-edit .documents-view__new-ver input  ${filePath}
+  Choose File  jquery=${documentManageSelector} documents-view .documents-view__row .documents-view__name-col[docid=${docId}]~.documents-view__controls-col .documents-view__new-ver input  ${filePath}
   ${docCreateNewVersionSelector}=  Set Variable  ${documentManageSelector} document-new-version
   Wait Until Page Contains Element  jquery=${docCreateNewVersionSelector}
   Run Keyword If  "${confidentialityText}" != "${None}"
@@ -1296,16 +1310,16 @@ izi document-manage add document new version
   ...  izi checkbox check change  checkboxSelector=${docCreateNewVersionSelector} .document-manage__checkbox:eq(0) checkbox  check=True
   Run Keyword If  '${language}' != 'None'  izi dropdown select option  dropDownSelector=${docCreateNewVersionSelector} language-select  key=${language}
   Run Keyword If  '${docType}' != 'None'  izi dropdown select option  dropDownSelector=${docCreateNewVersionSelector} document-type-select  key=${docType}
-  ${docVersionsCount}=  Execute Javascript  return $('${documentManageSelector} documents-view .documents-view__documents-row .documents-view__documents-name[docId=${docId}]~document-versions-urls a').length
+  ${docVersionsCount}=  Execute Javascript  return $('${documentManageSelector} documents-view .documents-view__row .documents-view__name-col[docid=${docId}]~.documents-view__versions-col document-versions-urls a').length
   Click Element  jquery=${docCreateNewVersionSelector} .document-manage__btn-wrap button
-  Wait Until Page Contains Element  jquery=${documentManageSelector} documents-view .documents-view__documents-row .documents-view__documents-name[docId=${docId}]~document-versions-urls a:eq(${docVersionsCount})
+  Wait Until Page Contains Element  jquery=${documentManageSelector} documents-view .documents-view__row .documents-view__name-col[docid=${docId}]~.documents-view__versions-col document-versions-urls a:eq(${docVersionsCount})
 
 
 izi document-manage add document
   [Arguments]  ${documentManageSelector}  ${filePath}  ${docType}  ${language}=3  ${confidentialityText}=${None}  ${isDescriptionDecision}=${None}
-  ${canAddDocument}=  Execute Javascript  return !!$('${documentManageSelector} .documents-manage__documents-control .documents-manage__new-doc-btn').length
+  ${canAddDocument}=  Execute Javascript  return !!$('${documentManageSelector} .documents-manage__new-doc-btn').length
   Run Keyword And Return If  '${canAddDocument}' == 'False'  Fail
-  Choose File  jquery=${documentManageSelector} .documents-manage__documents-control .documents-manage__new-doc-btn input  ${filePath}
+  Choose File  jquery=${documentManageSelector} .documents-manage__new-doc-btn input  ${filePath}
   ${docCreateFormSelector}=  Set Variable  ${documentManageSelector} document-create-list .document-create-list__item:eq(0) document-create
   Wait Until Page Contains Element  jquery=${docCreateFormSelector}
   Run Keyword If  "${confidentialityText}" != "${None}"
@@ -1317,29 +1331,30 @@ izi document-manage add document
   ...  izi checkbox check change  checkboxSelector=${docCreateFormSelector} .document-manage__checkbox:eq(0) checkbox  check=True
   izi dropdown select option  dropDownSelector=${docCreateFormSelector} language-select  key=${language}
   izi dropdown select option  dropDownSelector=${docCreateFormSelector} document-type-select  key=${docType}
-  ${currDocsLength}=  Execute Javascript  return $('${documentManageSelector} documents-view .documents-view__documents-row').length
+  ${currDocsLength}=  Execute Javascript  return $('${documentManageSelector} documents-view .documents-view__row').length
   Click Element  jquery=${documentManageSelector} document-create-list .document-manage__btn-wrap button
-  Wait Until Page Contains Element  jquery=${documentManageSelector} documents-view .documents-view__documents-row:eq(${currDocsLength})
+  Wait Until Page Contains Element  jquery=${documentManageSelector} documents-view .documents-view__row:eq(${currDocsLength})
 
 izi bid-submit-form submit form
   ${canSubmit}=  Execute Javascript  return !!$('.bid-submit .bid-submit__control button:not(button[disabled])').length
   Run Keyword And Return If  '${canSubmit}' == 'False'  Fail
-  Click Element  jquery=.bid-submit .bid-submit__control button
-  ${dialogSelector}=  Set Variable  .bid-submit-1 .fullscreen-popup__content > action-dialog-popup:not(bid-signature action-dialog-popup)
-  ${messageDialogSelector}=  Set Variable  ${dialogSelector} .action-dialog-popup__message
-  Wait Until Element Is Visible  jquery=${messageDialogSelector}  20
-  Click Element  jquery=${messageDialogSelector}+.action-dialog-popup__btn-wrap button
+  Click Element  jquery=.bid-submit .bid-submit__bid-submit-btn
+  ${dialogSelector}=  Set Variable  bid-submit-1 > fullscreen-popup > .fullscreen-popup__wrap > .fullscreen-popup__content > action-dialog-popup.active
+  Wait Until Element Is Visible  jquery=${dialogSelector}  20
+  ${dialogOkBtnSelector}=   Set Variable  ${dialogSelector} .action-dialog-popup__btn-wrap__btn-ok
+  Click Element  jquery=${dialogOkBtnSelector}
 
 izi bid-submit-form cancel bid
   ${canCancel}=  Execute Javascript  return !!$('.bid-submit .bid-submit__control button:eq(1):not(button[disabled])').length
   Run Keyword And Return If  '${canCancel}' == 'False'  Fail
-  Click Element  jquery=.bid-submit .bid-submit__control button
-  ${dialogSelector}=  Set Variable  .bid-submit action-dialog-popup:not(bid-signature action-dialog-popup)
+  Click Element  jquery=.bid-submit .bid-submit__bid-revoke-btn
+  ${dialogSelector}=  Set Variable  bid-submit-1 > fullscreen-popup > .fullscreen-popup__wrap > .fullscreen-popup__content > action-dialog-popup.active
   ${messageDialogSelector}=  Set Variable  ${dialogSelector} .action-dialog-popup__message
   Wait Until Element Is Visible  jquery=${messageDialogSelector}:contains(Підтвердіть відкликання пропозиці)  20
-  Click Element  jquery=${messageDialogSelector}+.action-dialog-popup__btn-wrap button:eq(0)
+  ${dialogOkBtnSelector}=   Set Variable  ${dialogSelector} .action-dialog-popup__btn-wrap__btn-ok
+  Click Element  jquery=${dialogOkBtnSelector}
   Wait Until Element Is Visible  jquery=${messageDialogSelector}:contains(Пропозиція відкликана)  20
-  Click Element  jquery=${messageDialogSelector}+.action-dialog-popup__btn-wrap button
+  Click Element  jquery=${dialogOkBtnSelector}
 
 izi bid-submit-form get valueAmount
   ${value}=  Get Value  jquery=.bid-submit value-submit input
@@ -1455,10 +1470,10 @@ izi знайти на сторінці тендера посилання на а
   ${url}=  Execute Javascript  return $('tender-lot-status p strong:contains(Аукціон:)~a').attr('href')
   [Return]  ${url}
 
-izi get document title
+izi get document title from documents versions
   [Arguments]  ${documentsVersionsSelector}  ${docId}
-  ${docTitle}=  Get Text  jquery=${documentsVersionsSelector} .documents-versions__row[docId="${docId}"] .documents-versions__name a
-  [Return]  ${docTitle}
+  ${value}=  Execute Javascript  return $('${documentsVersionsSelector} .documents-versions__row[docId="${docId}"] .documents-versions__name__url').text().trim()
+  [Return]  ${value}
 
 izi знайти на сторінці тендера поле documents[${index}].title
   ${isTenderTabsExists}=  Execute Javascript  return !!$('tender-tabs').length
@@ -1466,14 +1481,14 @@ izi знайти на сторінці тендера поле documents[${index
   Sleep  50ms
 	${docId}=	izi get tender docId by docIndex
   ...  docIndex=${index}
-  ${docTitle}=  izi get document title
+  ${docTitle}=  izi get document title from documents versions
   ...  documentsVersionsSelector=tender-documents documents-versions
   ...  docId=${docId}
   [Return]  ${docTitle}
 
 izi bidding-results-form open award attachments popup
   [Arguments]  ${awardId}
-  Click Element  jquery=bidding-results .bidding-results__table tr[awardId=${awardId}] attachments-popup+a
+  Click Element  jquery=bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__attachment-col > a
   Sleep  500ms
 
 izi bidding-results-form close award attachments popup
@@ -1487,7 +1502,7 @@ izi знайти на сторінці тендера поле awards[${awardInd
   ${docId}=  izi get award docId by docIndex
   ...		awardIndex=${awardIndex}	docIndex=${docIndex}
   izi bidding-results-form open award attachments popup  awardId=${awardId}
-  ${docTitle}=  izi get document title
+  ${docTitle}=  izi get document title from documents versions
   ...  documentsVersionsSelector=bidding-results attachments-popup .fullscreen-popup__opened documents-versions
   ...  docId=${docId}
   izi bidding-results-form close award attachments popup
@@ -1497,7 +1512,7 @@ izi знайти на сторінці тендера поле awards[${awardInd
 izi знайти на сторінці тендера поле awards[${awardIndex}].status
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${value}=  Execute Javascript  return $('bidding-results .bidding-results__table tr[awardId=${awardId}] td.bidding-results__status > a').text().trim()
+  ${value}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__status-col .bidding-results__status').text().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
@@ -1505,35 +1520,35 @@ izi знайти на сторінці тендера поле awards[${awardInd
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
   ${value}=  izi get countryName from iziAddressField
-  ...  iziAddressFieldSelector=bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(Адресса постачальника)+span
+  ...  iziAddressFieldSelector=bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Адреса постачальника)+span
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].address.locality
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
   ${value}=  izi get locality from iziAddressField
-  ...  iziAddressFieldSelector=bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(Адресса постачальника)+span
+  ...  iziAddressFieldSelector=bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Адреса постачальника)+span
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].address.postalCode
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
   ${value}=  izi get postalCode from iziAddressField
-  ...  iziAddressFieldSelector=bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(Адресса постачальника)+span
+  ...  iziAddressFieldSelector=bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Адреса постачальника)+span
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].address.region
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
   ${value}=  izi get region from iziAddressField
-  ...  iziAddressFieldSelector=bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(Адресса постачальника)+span
+  ...  iziAddressFieldSelector=bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Адреса постачальника)+span
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].address.streetAddress
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
   ${value}=  izi get streetAddress from iziAddressField
-  ...  iziAddressFieldSelector=bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(Адресса постачальника)+span
+  ...  iziAddressFieldSelector=bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Адреса постачальника)+span
   [Return]  ${value}
 
 izi get streetAddress from iziAddressField
@@ -1623,49 +1638,49 @@ izi get countryName_en from iziAddressString
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].contactPoint.telephone
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${value}=  Execute Javascript  return $('bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(Телефон)+span').text()
+  ${value}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Телефон)+span').text()
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].contactPoint.name
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${value}=  Execute Javascript  return $('bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(Представник)+span').text()
+  ${value}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Представник)+span').text()
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].contactPoint.email
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${value}=  Execute Javascript  return $('bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(E-mail)+span').text()
+  ${value}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(E-mail)+span').text()
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].identifier.id
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${value}=  Execute Javascript  return $('bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(Код ЄДРПОУ)+span').text()
+  ${value}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Код ЄДРПОУ)+span').text()
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].name
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${value}=  Execute Javascript  return $('bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0)>span').text()
+  ${value}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Постачальник)+span').text()
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].identifier.scheme
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${value}=  Execute Javascript  return $('bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(Схема Ідентифікації)+span').text()
+  ${value}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Схема Ідентифікації)+span').text()
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].suppliers[${supplierIndex}].identifier.legalName
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${value}=  Execute Javascript  return $('bidding-results .bidding-results__table tr[awardId=${awardId}] td:eq(0) info-popup .info-popup__popup p strong:contains(Постачальник)+span').text()
+  ${value}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__participant-col .info-popup .info-popup__popup__tip strong:contains(Постачальник)+span').text()
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].value.amount
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${textField}=  Execute Javascript  return $('bidding-results .bidding-results__table tr[awardId=${awardId}] td.bidding-results__value').text().trim()
+  ${textField}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__value-col .bidding-results__value').text().trim()
   ${value}=  izi convert izi number to prozorro number  ${textField}
 
   [Return]  ${value}
@@ -1673,19 +1688,19 @@ izi знайти на сторінці тендера поле awards[${awardInd
 izi знайти на сторінці тендера поле awards[${awardIndex}].value.currency
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${iziCurr}=  Execute Javascript  return ($('bidding-results .bidding-results__table tr[awardId=${awardId}] td.bidding-results__value').text().trim().match(/^\\D*\\d*[\\s,\\d]*(.*)$/)[1] || "").split(' ')[0]
+  ${iziCurr}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}]  > .bidding-results__value-col .bidding-results__value-curr').text().trim()
   ${curr}=  izi_service.get_prozorro_curr_by_izi_curr  ${iziCurr}
   Return From Keyword If  '${curr}' != '${None}'  ${curr}
-  ${iziCurr}=  Execute Javascript  return ($('bidding-results .bidding-results__table thead tr td.bidding-results__value').text().trim()).split(' ')[2].trim()
+  ${iziCurr}=  Execute Javascript  return ($('bidding-results > .bidding-results__table .bidding-results__table-head > .bidding-results__value-col').text().trim()).split(' ')[2].trim()
   ${curr}=  izi_service.get_prozorro_curr_by_izi_curr  ${iziCurr}
   [Return]  ${curr}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].value.valueAddedTaxIncluded
   ${awardId}=  izi get awardId by awardIndex
   ...  awardIndex=${awardIndex}
-  ${isTaxIncluded}=  Execute Javascript  return $('bidding-results .bidding-results__table tr[awardId=${awardId}] td.bidding-results__value:contains(без ПДВ)').length ? false : $('bidding-results .bidding-results__table tr[awardId=${awardId}] td.bidding-results__value:contains(з ПДВ)').length ? true : null
+  ${isTaxIncluded}=  Execute Javascript  return $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__value-col .bidding-results__value-vat:contains(без ПДВ)').length ? false : $('bidding-results > .bidding-results__table > .bidding-results__row[awardId=${awardId}] > .bidding-results__value-col .bidding-results__value-vat:contains(з ПДВ)').length ? true : null
   Return From Keyword If  '${isTaxIncluded}' != '${None}'  ${isTaxIncluded}
-  ${isTaxIncluded}=  Execute Javascript  return !$('bidding-results .bidding-results__table thead tr td.bidding-results__value:contains(без ПДВ)').length
+  ${isTaxIncluded}=   Execute Javascript  return !$('bidding-results .bidding-results__table .bidding-results__table-head > .bidding-results__value-col:contains(без ПДВ)').length
   [Return]  ${isTaxIncluded}
 
 izi get feature relatedOf
