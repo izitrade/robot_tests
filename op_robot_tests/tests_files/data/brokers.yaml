@@ -517,7 +517,7 @@ izi:
             tender:  [0, 10]
             accelerator: 1440
         belowThreshold:
-            enquiry: [0, 4]
+            enquiry: [0, 6]
             tender:  [0, 6]
             accelerator: 300
         openua:

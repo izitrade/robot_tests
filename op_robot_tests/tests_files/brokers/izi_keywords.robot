@@ -327,7 +327,7 @@ izi знайти на сторінці лоту ${index} поле minimalStep.cu
 
 izi знайти на сторінці лоту ${index} поле minimalStep.valueAddedTaxIncluded
   izi обрати лот ${index}
-  ${isTaxIncluded}=  Execute Javascript  return !!$('.tender-section tender-lot-info notes li:has(strong:contains(Мінімальний крок аукциону:)) span:contains(з ПДВ)').length > 0
+  ${isTaxIncluded}=  Execute Javascript  return !!$('.tender-lot tender-lot-info notes li:has(strong:contains(Мінімальний крок аукціону:)) span:contains(з ПДВ)').length > 0
   [Return]  ${isTaxIncluded}
 
 izi знайти на сторінці тендера поле awards[${awardIndex}].complaintPeriod.endDate
@@ -364,7 +364,7 @@ izi знайти на сторінці тендера поле cause
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле causeDescription
-  ${value}=  Get Text  jquery=tender .tender-section .tender-info-notes:eq(1) ul li:last span
+  ${value}=  Get Text  jquery=tender .tender-info-notes:eq(1) ul li:last span
   ${value}=  Convert To String  ${value}
   [Return]  ${value}
 
@@ -560,7 +560,7 @@ izi знайти на сторінці лоту поле lots[${index}].${field}
 
 izi знайти на сторінці лоту ${index} поле title
   izi обрати лот ${index}
-  ${value}=  Get Text  css=tender-lot .tender-lot-description .tender-section__topic:first-child
+  ${value}=  Get Text  css=tender-lot .tender-lot-description__title
   [Return]  ${value}
 
 izi знайти на сторінці лоту ${index} поле description
@@ -569,7 +569,7 @@ izi знайти на сторінці лоту ${index} поле description
   [Return]  ${value}
 
 izi get lot budget string
-  ${budgetString}=  Execute Javascript  return $('.tender-section tender-lot-info notes li:has(strong:contains(Бюджет лоту:)) span').text().trim()
+  ${budgetString}=  Execute Javascript  return $('.tender-lot tender-lot-info notes li:has(strong:contains(Бюджет лоту:)) span').text().trim()
   [Return]  ${budgetString}
 
 izi знайти на сторінці лоту ${index} поле value.amount
@@ -587,7 +587,7 @@ izi знайти на сторінці лоту ${index} поле value.currency
 
 izi знайти на сторінці лоту ${index} поле value.valueAddedTaxIncluded
   izi обрати лот ${index}
-  ${isTaxIncluded}=  Execute Javascript  return !!$('.tender-section tender-lot-info notes li:has(strong:contains(Бюджет лоту:)) span:contains(з ПДВ)').length > 0
+  ${isTaxIncluded}=  Execute Javascript  return !!$('.tender-lot tender-lot-info notes li:has(strong:contains(Бюджет лоту:)) span:contains(з ПДВ)').length > 0
   [Return]  ${isTaxIncluded}
 
 izi знайти на сторінці лоту ${index} поле description предмету ${item_id}
