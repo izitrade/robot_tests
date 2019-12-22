@@ -384,8 +384,8 @@ izi знайти на сторінці тендера поле description пр�
 izi знайти на сторінці тендера поле title нецінового показника ${feature_id}
   ${value}=  izi find objectId element value  objectId=${feature_id}
   ...  wrapperElSelector=winner-criterias .winner-criterias__row
-  ...  elThatHasObjectIdSelector=.winner-criterias__name span:first
-  ...  elThatHasValueSelector=.winner-criterias__name span:first
+  ...  elThatHasObjectIdSelector=.winner-criterias__name
+  ...  elThatHasValueSelector=.winner-criterias__name
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле deliveryDate.endDate предмету ${item_id}
@@ -547,8 +547,8 @@ izi знайти на сторінці тендера поле unit.code пре�
 izi знайти на сторінці тендера поле description нецінового показника ${feature_id}
   ${value}=  izi find objectId element value  objectId=${feature_id}
   ...  wrapperElSelector=winner-criterias .winner-criterias__row
-  ...  elThatHasObjectIdSelector=.winner-criterias__name span:first
-  ...  elThatHasValueSelector=.winner-criterias__name info-popup span div span
+  ...  elThatHasObjectIdSelector=.winner-criterias__name
+  ...  elThatHasValueSelector=.winner-criterias__name-col info-popup span div span
   [Return]  ${value}
 
 izi обрати лот ${index}
@@ -726,16 +726,16 @@ izi знайти на сторінці лоту ${index} поле title неці
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${feature_id}
   ...  wrapperElSelector=winner-criterias .winner-criterias__row
-  ...  elThatHasObjectIdSelector=.winner-criterias__name span:first
-  ...  elThatHasValueSelector=.winner-criterias__name span:first
+  ...  elThatHasObjectIdSelector=.winner-criterias__name
+  ...  elThatHasValueSelector=.winner-criterias__name
   [Return]  ${value}
 
 izi знайти на сторінці лоту ${index} поле description нецінового показника ${feature_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${feature_id}
   ...  wrapperElSelector=winner-criterias .winner-criterias__row
-  ...  elThatHasObjectIdSelector=.winner-criterias__name span:first
-  ...  elThatHasValueSelector=.winner-criterias__name info-popup span div span
+  ...  elThatHasObjectIdSelector=.winner-criterias__name
+  ...  elThatHasValueSelector=.winner-criterias__name-col info-popup span div span
   [Return]  ${value}
 
 izi задати запитання на тендер
@@ -1708,8 +1708,8 @@ izi get feature relatedOf
   ${value}=  izi find objectId element value
   ...  objectId=${featureObjectId}
   ...  wrapperElSelector=winner-criterias .winner-criterias__row
-  ...  elThatHasObjectIdSelector=.winner-criterias__name>span
-  ...  elThatHasValueSelector=.winner-criterias__name>span+info-popup .info-popup__popup p span div span~strong
+  ...  elThatHasObjectIdSelector=.winner-criterias__name
+  ...  elThatHasValueSelector=.winner-criterias__name-col info-popup .info-popup__popup p span div span~strong
   Return From Keyword If  '${value}' == 'неціновий показник до закупівлі'  tenderer
   Return From Keyword If  '${value}' == 'неціновий показник до лоту'  lot
   Return From Keyword If  '${value}' == 'неціновий показник до предмету лоту'  item
