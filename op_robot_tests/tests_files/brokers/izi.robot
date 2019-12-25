@@ -252,7 +252,7 @@ Login
   Run Keyword And Return  izi змінити на сторінці тендера поле пропозиції ${fieldname} на ${fieldvalue}
 
 Завантажити документ в ставку
-  [Arguments]  ${username}  ${filePath}  ${tender_uaid}  ${prozorro_documentType}=technicalSpecifications
+  [Arguments]  ${username}  ${filePath}  ${tender_uaid}  ${prozorro_documentType}=technicalSpecifications   ${unknownArg}=${None}
   izi перейти на сторінку тендеру  ${tender_uaid}
   ${docType}=  izi_service.get_izi_docType_by_prozorro_docType  ${prozorro_documentType}
   ${lotsCount}=  izi get page lots count

@@ -521,10 +521,10 @@ izi:
             tender:  [0, 6]
             accelerator: 300
         openua:
-            tender:  [0, 20]
+            tender:  [0, 15]
             accelerator: 1440
         openeu:
-            tender:  [0, 10]
+            tender:  [0, 35]
             accelerator: 1440
         openua_defense:
             tender:  [0, 20]

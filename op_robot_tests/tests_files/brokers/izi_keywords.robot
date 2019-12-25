@@ -349,7 +349,7 @@ izi знайти на сторінці лоту поле award-complaintPeriod-e
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле complaintPeriod.endDate
-  ${value}=  Get Text  jquery=complaints pretenses tender-pretense-create .pretense
+  ${value}=  Execute Javascript   return $('complaints tender-pretense-create .pretense-create__info').text().trim().split(' ').slice(-2).join(' ')
   ${value}=  Split String  ${value}  24
   [Return]  ${value}
 
@@ -914,12 +914,12 @@ izi award-claim-submit-form fill data
 izi claim-submit-form add document
   [Arguments]  ${document_path}  ${award_index}=${None}
   Run Keyword And Return If  '${award_index}'!='${None}'  izi award-claim-submit-form add document  ${document_path}
-  Choose File  jquery=claims tender-pretense-create .documents-manage__feed-loader_1:first input  ${document_path}
+  Choose File  jquery=claims tender-pretense-create .documents-manage:eq(0) .documents-manage__new-doc-btn input  ${document_path}
   Sleep  4
 
 izi award-claim-submit-form add document
   [Arguments]  ${document_path}
-  Choose File  jquery=claims award-pretense-create .documents-manage__feed-loader_1:first input  ${document_path}
+  Choose File  jquery=claims award-pretense-create .documents-manage:eq(0) .documents-manage__new-doc-btn input  ${document_path}
   Sleep  4
 
 izi claim-submit-form submit form
@@ -929,8 +929,8 @@ izi claim-submit-form submit form
   Sleep  2
   Click Button  jquery=claims .pretense-create__btn-wrap button
   Sleep  2
-  Wait Until Element Is Visible  jquery=claims tender-pretense-create .action-dialog-popup[style=""] .action-dialog-popup__btn-wrap__btn-ok  20 seconds
-  Click Button  jquery=claims tender-pretense-create .action-dialog-popup[style=""] .action-dialog-popup__btn-wrap__btn-ok
+  Wait Until Element Is Visible  jquery=claims tender-pretense-create .action-dialog-popup.active .action-dialog-popup__btn-wrap__btn-ok  20 seconds
+  Click Button  jquery=claims tender-pretense-create .action-dialog-popup.active .action-dialog-popup__btn-wrap__btn-ok
   Sleep  2
 
 izi award-claim-submit-form submit form
@@ -938,9 +938,9 @@ izi award-claim-submit-form submit form
   Sleep  2
   Click Element  jquery=claims award-pretense-create .pretense-create__btn-wrap button
   Sleep  2
-  Wait Until Element Is Visible  jquery=claims award-pretense-create .action-dialog-popup[style=""] .action-dialog-popup__btn-wrap__btn-ok  20 seconds
+  Wait Until Element Is Visible  jquery=claims award-pretense-create .action-dialog-popup.active .action-dialog-popup__btn-wrap__btn-ok  20 seconds
   Sleep  2
-  Click Button  jquery=claims award-pretense-create .action-dialog-popup[style=""] .action-dialog-popup__btn-wrap__btn-ok
+  Click Button  jquery=claims award-pretense-create .action-dialog-popup.active .action-dialog-popup__btn-wrap__btn-ok
 
 izi claim-submit-form select lot radiobutton
   Click Element  jquery=claims .pretense-create__checker div:first .checkbox:last label
@@ -953,9 +953,9 @@ izi claim-submit-form save draft
   Sleep  2
   Click Element  jquery=claims .pretense-create__save
   Sleep  2
-  Wait Until Element Is Visible  jquery=claims tender-pretense-create .action-dialog-popup[style=""] .action-dialog-popup__btn-wrap__btn-ok  20 seconds
+  Wait Until Element Is Visible  jquery=claims tender-pretense-create .action-dialog-popup.active .action-dialog-popup__btn-wrap__btn-ok  20 seconds
   Sleep  2
-  Click Button  jquery=claims tender-pretense-create .action-dialog-popup[style=""] .action-dialog-popup__btn-wrap__btn-ok
+  Click Button  jquery=claims tender-pretense-create .action-dialog-popup.active .action-dialog-popup__btn-wrap__btn-ok
   Wait Until Page Contains Element  jquery=claims tender-pretense-create[draftpretenseid]
   Sleep  2
 
@@ -964,9 +964,9 @@ izi award-claim-submit-form save draft
   Sleep  2
   Click Element  jquery=claims .pretense-create__save
   Sleep  2
-  Wait Until Element Is Visible  jquery=claims award-pretense-create .action-dialog-popup[style=""] .action-dialog-popup__btn-wrap__btn-ok  20 seconds
+  Wait Until Element Is Visible  jquery=claims award-pretense-create .action-dialog-popup.active .action-dialog-popup__btn-wrap__btn-ok  20 seconds
   Sleep  2
-  Click Button  jquery=claims award-pretense-create .action-dialog-popup[style=""] .action-dialog-popup__btn-wrap__btn-ok
+  Click Button  jquery=claims award-pretense-create .action-dialog-popup.active .action-dialog-popup__btn-wrap__btn-ok
   Wait Until Page Contains Element  jquery=claims award-pretense-create[draftpretenseid]
   Sleep  2
 
@@ -1796,3 +1796,5 @@ izi знайти на сторінці тендера поле lots[${lotIndex}]
   izi обрати лот ${lotIndex}
   ${value}=   Execute Javascript  return $('.tender-lot .tender-lot-description__title').first().text().trim()
   [Return]  ${value}
+
+izi знайти на сторінці тендера поле features[${index}].description
