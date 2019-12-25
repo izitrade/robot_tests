@@ -1797,4 +1797,10 @@ izi знайти на сторінці тендера поле lots[${lotIndex}]
   ${value}=   Execute Javascript  return $('.tender-lot .tender-lot-description__title').first().text().trim()
   [Return]  ${value}
 
+izi знайти на сторінці тендера поле features[${index}].title
+  ${value}=   Execute Javascript  return $('winner-criterias .winner-criterias__row:eq(${index}) .winner-criterias__name').text().trim()
+  [Return]  ${value}
+
 izi знайти на сторінці тендера поле features[${index}].description
+  ${value}=   Execute Javascript  return $('winner-criterias .winner-criterias__row:eq(${index}) .winner-criterias__name-col info-popup span div span').text().trim()
+  [Return]  ${value}
