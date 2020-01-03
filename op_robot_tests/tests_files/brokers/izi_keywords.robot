@@ -376,9 +376,9 @@ izi знайти на сторінці тендера поле value.currency
 
 izi знайти на сторінці тендера поле description предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
-  ...  elThatHasObjectIdSelector=.items-info__name .items-info__name-desc
-  ...  elThatHasValueSelector=.items-info__name .items-info__name-desc
+  ...  wrapperElSelector=.items-info .items-info__row
+  ...  elThatHasObjectIdSelector=.items-info__name
+  ...  elThatHasValueSelector=.items-info__name span:last-child
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле title нецінового показника ${feature_id}
@@ -391,25 +391,25 @@ izi знайти на сторінці тендера поле title нецін�
 izi знайти на сторінці тендера поле deliveryDate.endDate предмету ${item_id}
   ${value}=  izi find objectId element value
   ...  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:last
+  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле deliveryDate.startDate предмету ${item_id}
   ${value}=  izi find objectId element value
   ...  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:first
+  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:first
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле items[${item_index}].deliveryDate.endDate предмету ${item_id}
   ${value}=  izi find objectId element value
   ...  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:last
   ${value}=  izi convert izi date to prozorro date  ${value}
@@ -417,7 +417,7 @@ izi знайти на сторінці тендера поле items[${item_inde
 
 izi знайти на сторінці тендера поле deliveryAddress.region предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get region from iziAddressString
@@ -426,7 +426,7 @@ izi знайти на сторінці тендера поле deliveryAddress.r
 
 izi знайти на сторінці тендера поле deliveryAddress.countryName предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get countryName from iziAddressString
@@ -435,7 +435,7 @@ izi знайти на сторінці тендера поле deliveryAddress.c
 
 izi знайти на сторінці тендера поле deliveryAddress.countryName_ru предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get countryName_ru from iziAddressString
@@ -446,7 +446,7 @@ izi знайти на сторінці тендера поле deliveryAddress.c
 izi знайти на сторінці лоту ${lotIndex} поле deliveryAddress.countryName_ru предмету ${item_id}
   izi обрати лот ${lotIndex}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get countryName_ru from iziAddressString
@@ -455,7 +455,7 @@ izi знайти на сторінці лоту ${lotIndex} поле deliveryAdd
 
 izi знайти на сторінці тендера поле deliveryAddress.countryName_en предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get countryName_en from iziAddressString
@@ -465,7 +465,7 @@ izi знайти на сторінці тендера поле deliveryAddress.c
 izi знайти на сторінці лоту ${lotIndex} поле deliveryAddress.countryName_en предмету ${item_id}
   izi обрати лот ${lotIndex}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get countryName_en from iziAddressString
@@ -474,7 +474,7 @@ izi знайти на сторінці лоту ${lotIndex} поле deliveryAdd
 
 izi знайти на сторінці тендера поле deliveryAddress.postalCode предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get postalCode from iziAddressString
@@ -483,7 +483,7 @@ izi знайти на сторінці тендера поле deliveryAddress.p
 
 izi знайти на сторінці тендера поле deliveryAddress.locality предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get locality from iziAddressString
@@ -492,7 +492,7 @@ izi знайти на сторінці тендера поле deliveryAddress.l
 
 izi знайти на сторінці тендера поле deliveryAddress.streetAddress предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get streetAddress from iziAddressString
@@ -501,28 +501,28 @@ izi знайти на сторінці тендера поле deliveryAddress.s
 
 izi знайти на сторінці тендера поле classification.scheme предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__classification-scheme:eq(0)
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле classification.id предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__classification-id:eq(0)
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле classification.description предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__classification-descr:eq(0)
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле quantity предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__number span:eq(0)
   ${value}=  Convert To Number  ${value}
@@ -530,7 +530,7 @@ izi знайти на сторінці тендера поле quantity пред
 
 izi знайти на сторінці тендера поле unit.name предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__number span:eq(1)
   [Return]  ${value}
@@ -539,7 +539,7 @@ izi знайти на сторінці тендера поле unit.name пре�
 izi знайти на сторінці тендера поле unit.code предмету ${item_id}
   ${attribute}=  Set Variable  przItemUnitCode
   ${value}=  izi find objectId element attribute  attribute=${attribute}  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__uname
   [Return]  ${value}
@@ -593,16 +593,16 @@ izi знайти на сторінці лоту ${index} поле value.valueAdd
 izi знайти на сторінці лоту ${index} поле description предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__name-desc
+  ...  elThatHasValueSelector=.items-info__name span:last-child
   [Return]  ${value}
 
 izi знайти на сторінці лоту ${index} поле deliveryDate.startDate предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value
   ...  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:first
   ${value}=  izi convert izi date to prozorro date  ${value}
@@ -613,7 +613,7 @@ izi знайти на сторінці лоту ${index} поле deliveryDate.e
   izi обрати лот ${index}
   ${value}=  izi find objectId element value
   ...  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:last
   ${value}=  izi convert izi date to prozorro date  ${value}
@@ -623,7 +623,7 @@ izi знайти на сторінці лоту ${index} поле deliveryDate.e
 izi знайти на сторінці лоту ${index} поле deliveryAddress.region предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки) span
   ${value}=  izi get region from iziAddressString
@@ -634,7 +634,7 @@ izi знайти на сторінці лоту ${index} поле deliveryAddres
 izi знайти на сторінці лоту ${index} поле deliveryAddress.locality предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки) span
 
@@ -646,7 +646,7 @@ izi знайти на сторінці лоту ${index} поле deliveryAddres
 izi знайти на сторінці лоту ${index} поле deliveryAddress.countryName предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get countryName from iziAddressString
@@ -656,7 +656,7 @@ izi знайти на сторінці лоту ${index} поле deliveryAddres
 izi знайти на сторінці лоту ${index} поле deliveryAddress.postalCode предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get postalCode from iziAddressString
@@ -666,7 +666,7 @@ izi знайти на сторінці лоту ${index} поле deliveryAddres
 izi знайти на сторінці лоту ${index} поле deliveryAddress.streetAddress предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__popup p:contains(Місце доставки:) span
   ${value}=  izi get streetAddress from iziAddressString
@@ -676,7 +676,7 @@ izi знайти на сторінці лоту ${index} поле deliveryAddres
 izi знайти на сторінці лоту ${index} поле classification.scheme предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__classification-scheme:eq(0)
   [Return]  ${value}
@@ -684,7 +684,7 @@ izi знайти на сторінці лоту ${index} поле classification
 izi знайти на сторінці лоту ${index} поле classification.id предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__classification-id:eq(0)
   [Return]  ${value}
@@ -692,7 +692,7 @@ izi знайти на сторінці лоту ${index} поле classification
 izi знайти на сторінці лоту ${index} поле classification.description предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__classification-descr:eq(0)
   [Return]  ${value}
@@ -700,7 +700,7 @@ izi знайти на сторінці лоту ${index} поле classification
 izi знайти на сторінці лоту ${index} поле unit.name предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__number span:eq(1)
   [Return]  ${value}
@@ -708,7 +708,7 @@ izi знайти на сторінці лоту ${index} поле unit.name пр
 izi знайти на сторінці лоту ${index} поле unit.code предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__number span:eq(2)
   [Return]  ${value}
@@ -716,7 +716,7 @@ izi знайти на сторінці лоту ${index} поле unit.code пр
 izi знайти на сторінці лоту ${index} поле quantity предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__number span:eq(0)
   ${value}=  Convert To Number  ${value}
