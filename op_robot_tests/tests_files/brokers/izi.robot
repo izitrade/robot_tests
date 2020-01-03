@@ -49,7 +49,7 @@ Login
 Отримати інформацію із лоту
   [Arguments]  ${username}  ${tender_uaid}  ${object_id}  ${field}
   izi перейти на сторінку тендеру  ${tender_uaid}
-  ${fieldPath}=   Отримати шлях до поля об’єкта ${username}  ${field}  ${object_id}
+  ${fieldPath}=  Отримати шлях до поля об’єкта      ${username}  ${field}  ${object_id}
   Run Keyword And Return  izi знайти на сторінці лоту поле ${fieldPath}
 
 Отримати інформацію із предмету
