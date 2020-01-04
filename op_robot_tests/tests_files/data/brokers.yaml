@@ -24,11 +24,11 @@ Default:
             # First number in list:  Delay before period starts (for startDate)
             # Second number in list: Duration of period (for endDate)
             enquiry: [0, 11]
-            tender:  [0, 15]
+            tender:  [0, 31]
             # accelerator: Integer value
             # This is not a name of period
             # Please refer to API documentation to find out what's this
-            accelerator: 1440
+            accelerator: 4000
         openua:
             accelerator: 1440
             tender:  [0, 15]
@@ -37,7 +37,7 @@ Default:
             # (it is set automatically)
         openeu:
             accelerator: 1440
-            tender:  [0, 15]
+            tender:  [0, 10]
         openua_defense:
             accelerator: 1440
             tender:  [0, 6]
@@ -46,11 +46,11 @@ Default:
             tender:  [0, 10]
         open_esco:
              accelerator: 1440
-             enquiry: [0, 15]
-             tender:  [0, 15]
+             enquiry: [0, 10]
+             tender:  [0, 10]
         open_framework:
              accelerator: 1440
-             tender:  [0, 15]
+             tender:  [0, 10]
         framework_selection:
              accelerator: 360
     # Synchronization delay, in seconds
@@ -58,24 +58,24 @@ Default:
 Quinta:
     intervals:
         default:
-            enquiry: [0, 20]
-            tender:  [0, 20]
+            enquiry: [0, 2]
+            tender:  [0, 15]
         openua:
-            tender:  [1, 30]
+            tender:  [1, 15]
         openeu:
-            tender:  [1, 35]
+            tender:  [1, 15]
         openua_defense:
-            tender:  [0, 20]
+            tender:  [0, 15]
         open_competitive_dialogue:
             accelerator: 1440
-            tender:  [0, 30]
+            tender:  [0, 15]
         open_esco:
              accelerator: 1440
-             enquiry: [0, 15]
-             tender:  [0, 30]
+             enquiry: [0, 1]
+             tender:  [0, 15]
         open_framework:
              accelerator: 1440
-             tender:  [0, 30]
+             tender:  [0, 15]
         framework_selection:
              accelerator: 360
     keywords_file: openprocurement_client
