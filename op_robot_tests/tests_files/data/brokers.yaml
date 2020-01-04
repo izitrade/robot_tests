@@ -537,8 +537,8 @@ izi:
         provider:       izi_provider
         provider1:      izi_provider1
         viewer:         izi_viewer
-    timeout_on_wait: 5,
-    period_interval: 0.3,
+    timeout_on_wait: 5
+    period_interval: 1
 ukrtender:
     intervals:
         default:
