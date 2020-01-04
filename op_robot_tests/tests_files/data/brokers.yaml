@@ -23,33 +23,33 @@ Default:
             #
             # First number in list:  Delay before period starts (for startDate)
             # Second number in list: Duration of period (for endDate)
-            enquiry: [0, 11]
-            tender:  [0, 31]
+            enquiry: [0, 2]
+            tender:  [0, 15]
             # accelerator: Integer value
             # This is not a name of period
             # Please refer to API documentation to find out what's this
-            accelerator: 4000
+            accelerator: 1600
         openua:
-            accelerator: 1440
+            accelerator: 1600
             tender:  [0, 15]
             # Please remember that openUA, openEU and openUA_defense procedures
             # forbid anyone to set or modify enquiryPeriod
             # (it is set automatically)
         openeu:
-            accelerator: 1440
+            accelerator: 1600
             tender:  [0, 10]
         openua_defense:
-            accelerator: 1440
+            accelerator: 1600
             tender:  [0, 6]
         open_competitive_dialogue:
-            accelerator: 1440
+            accelerator: 1600
             tender:  [0, 10]
         open_esco:
-             accelerator: 1440
+             accelerator: 1600
              enquiry: [0, 10]
              tender:  [0, 10]
         open_framework:
-             accelerator: 1440
+             accelerator: 1600
              tender:  [0, 10]
         framework_selection:
              accelerator: 360
@@ -70,11 +70,11 @@ Quinta:
             accelerator: 1440
             tender:  [0, 15]
         open_esco:
-             accelerator: 1440
+             accelerator: 1600
              enquiry: [0, 1]
              tender:  [0, 15]
         open_framework:
-             accelerator: 1440
+             accelerator: 1600
              tender:  [0, 15]
         framework_selection:
              accelerator: 360
@@ -513,25 +513,25 @@ izi:
     backendUrl: "https://api-test.izi.trade"
     intervals:
         default:
-            enquiry: [0, 10]
+            enquiry: [0, 2]
             tender:  [0, 10]
-            accelerator: 1440
+            accelerator: 1600
         belowThreshold:
-            enquiry: [0, 6]
-            tender:  [0, 6]
+            enquiry: [0, 2]
+            tender:  [0, 15]
             accelerator: 300
         openua:
             tender:  [0, 15]
-            accelerator: 1440
+            accelerator: 1600
         openeu:
             tender:  [0, 15]
-            accelerator: 1440
+            accelerator: 1600
         openua_defense:
             tender:  [0, 15]
-            accelerator: 1440
+            accelerator: 1600
         open_competitive_dialogue:
             tender:  [0, 15]
-            accelerator: 1440
+            accelerator: 1600
     keywords_file: izi
     roles:
         provider:       izi_provider

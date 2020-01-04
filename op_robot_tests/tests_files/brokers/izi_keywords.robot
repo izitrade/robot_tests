@@ -109,12 +109,12 @@ izi convert izi number to prozorro number
 
 izi find objectId element value
   [Arguments]  ${objectId}  ${wrapperElSelector}  ${elThatHasObjectIdSelector}  ${elThatHasValueSelector}
-  ${value}=  Execute Javascript  return $("${wrapperElSelector}").has("${elThatHasObjectIdSelector}"+":contains("+"${objectId}"+")").find("${elThatHasValueSelector}").text().trim() || null
+  ${value}=  Execute Javascript  return $("${wrapperElSelector}").has("${elThatHasObjectIdSelector}"+":contains("+"${objectId}"+")").find("${elThatHasValueSelector}").not(':empty').first().text().trim() || null
   [Return]  ${value}
 
 izi find objectId element attribute
   [Arguments]  ${attribute}  ${objectId}  ${wrapperElSelector}  ${elThatHasObjectIdSelector}  ${elThatHasValueSelector}
-  ${value}=  Execute Javascript  return $("${wrapperElSelector}").has("${elThatHasObjectIdSelector}"+":contains("+"${objectId}"+")").find("${elThatHasValueSelector}").attr("${attribute}") || null
+  ${value}=  Execute Javascript  return $("${wrapperElSelector}").has("${elThatHasObjectIdSelector}"+":contains("+"${objectId}"+")").find("${elThatHasValueSelector}[${attribute}]").first().attr("${attribute}") || null
   [Return]  ${value}
 
 izi перейти на сторінку пошуку
@@ -345,7 +345,8 @@ izi знайти на сторінці лоту поле award-complaintPeriod-e
   ${lotId}=  Get Variable Value  ${tender.data.awards[${awardIndex}].lotID}  ${None}
   ${lotIndex}=  izi get lotIndex by lotId  ${lotId}
   Run Keyword If  '${lotId}'!='${None}'  izi обрати лот ${lotIndex}
-  ${value}=  Execute Javascript  return $('.tender-lot-status__complain-period p:first').text().replace('Подати вимогу можливо: до',"").trim()
+  ${value}=  Execute Javascript  return $('.tender-lot-status__complain-period p:first').text().trim().split(' ').slice(-2).join(' ')
+  ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле complaintPeriod.endDate
@@ -832,23 +833,23 @@ izi знайти index лоту за lotObjectId
 izi знайти на сторінці тендера поле title документу ${doc_id}
   ${value}=  izi find objectId element value  objectId=${doc_id}
   ...  wrapperElSelector=documents-versions .documents-versions__row
-  ...  elThatHasObjectIdSelector=.documents-versions__name__url
-  ...  elThatHasValueSelector=.documents-versions__name__url
+  ...  elThatHasObjectIdSelector=.documents-versions__name-val
+  ...  elThatHasValueSelector=.documents-versions__name-val
   [Return]  ${value}
 
 izi знайти на сторінці лоту ${index} поле title документу ${doc_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${doc_id}
-  ...  wrapperElSelector=lot-content documents-versions .documents-versions__row
-  ...  elThatHasObjectIdSelector=.documents-versions__name__url
-  ...  elThatHasValueSelector=.documents-versions__name__url
+  ...  wrapperElSelector=documents-versions .documents-versions__row
+  ...  elThatHasObjectIdSelector=.documents-versions__name-val
+  ...  elThatHasValueSelector=.documents-versions__name-val
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле ulr документу ${doc_id}
   ${attribute}=  Set Variable  href
   ${value}=  Run Keyword  izi find objectId element attribute  attribute=${attribute}  objectId=${doc_id}
-  ...  wrapperElSelector=tender documents-versions .documents-versions__row
-  ...  elThatHasObjectIdSelector=.documents-versions__name__url
+  ...  wrapperElSelector=documents-versions .documents-versions__row
+  ...  elThatHasObjectIdSelector=.documents-versions__name-val
   ...  elThatHasValueSelector=.documents-versions__doc-download
   [Return]  ${value}
 
@@ -856,8 +857,8 @@ izi знайти на сторінці лоту ${index} поле ulr докум
   izi обрати лот ${index}
   ${attribute}=  Set Variable  href
   ${value}=  Run Keyword  izi find objectId element attribute  attribute=${attribute}  objectId=${doc_id}
-  ...  wrapperElSelector=lot-content documents-versions .documents-versions__row
-  ...  elThatHasObjectIdSelector=.documents-versions__name__url
+  ...  wrapperElSelector=documents-versions .documents-versions__row
+  ...  elThatHasObjectIdSelector=.documents-versions__name-val
   ...  elThatHasValueSelector=.documents-versions__doc-download
   [Return]  ${value}
 
@@ -866,25 +867,25 @@ izi знайти поле title документу ${doc_id} вимоги ${comp
   izi open claim by id  ${complaintID}
   ${value}=  izi find objectId element value  objectId=${complaintID}
   ...  wrapperElSelector=pretense-row .pretense-row__content-block
-  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги)) span
+  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги),:contains(Ідентифікатор скарги)) span
   ...  elThatHasValueSelector=.pretense-row__more-info .pretense-phase__files .pretense-phase__list a
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле contracts[${index}].status
   Sleep   3
-  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__status").text().trim()
+  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__status").text().trim() || $("contract-info:eq(0) .contract-info__status").text().trim()
   ${value}=  convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле contracts[${index}].value.amount
   Sleep   3
-  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__contract-value").text().trim()
+  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__contract-value").text().trim() || $("contract-info:eq(0) .contract-info__contract-value").text().trim()
   ${value}=  izi convert izi number to prozorro number  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле contracts[${index}].value.amountNet
   Sleep   3
-  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__contract-value-net").text().trim()
+  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__contract-value-net").text().trim() || $("contract-info:eq(0) .contract-info__contract-value-net").text().trim()
   ${value}=  izi convert izi number to prozorro number  ${value}
   [Return]  ${value}
 
@@ -1064,7 +1065,7 @@ izi знайти ідентифікатор вимоги
   ${complaintID}=  izi find objectId element value  objectId=${claim.data.title}
   ...  wrapperElSelector=claims pretense-row .pretense-row__content-block
   ...  elThatHasObjectIdSelector=.pretense-row__topic
-  ...  elThatHasValueSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги)) span
+  ...  elThatHasValueSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги),:contains(Ідентифікатор скарги)) span
   [Return]  ${complaintID}
 
 izi підтвердити\заперечити вирішення вимоги про виправлення умов закупівлі
@@ -1102,7 +1103,7 @@ izi отримати поле status з вимоги
 
   ${value}=  izi find objectId element attribute  attribute=${attribute}  objectId=${complaintID}
   ...  wrapperElSelector=pretense-row .pretense-row__content-block
-  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги)) span
+  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги),:contains(Ідентифікатор скарги)) span
   ...  elThatHasValueSelector=.pretense-row__status
 
   [Return]  ${value}
@@ -1117,7 +1118,7 @@ izi отримати поле description з вимоги
   izi select claims tab
   ${value}=  izi find objectId element value  objectId=${complaintID}
   ...  wrapperElSelector=pretense-row .pretense-row__content-block
-  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги)) span
+  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги),:contains(Ідентифікатор скарги)) span
   ...  elThatHasValueSelector=.pretense-row__more-info .pretense-data__text p
   [Return]  ${value}
 
@@ -1126,7 +1127,7 @@ izi отримати поле title з вимоги
   izi select claims tab
   ${value}=  izi find objectId element value  objectId=${complaintID}
   ...  wrapperElSelector=pretense-row .pretense-row__content-block
-  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги)) span
+  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги),:contains(Ідентифікатор скарги)) span
   ...  elThatHasValueSelector=.pretense-row__topic
   [Return]  ${value}
 
@@ -1136,7 +1137,7 @@ izi отримати поле resolutionType з вимоги
   ${attribute}=  Set Variable  resolutiontype
   ${value}=  izi find objectId element attribute  attribute=${attribute}  objectId=${complaintID}
   ...  wrapperElSelector=pretense-row .pretense-row__content-block
-  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги)) span
+  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги),:contains(Ідентифікатор скарги)) span
   ...  elThatHasValueSelector=.pretense-row__status
   [Return]  ${value}
 
@@ -1145,7 +1146,7 @@ izi отримати поле resolution з вимоги
   izi select claims tab
   ${value}=  izi find objectId element value  objectId=${complaintID}
   ...  wrapperElSelector=pretense-row .pretense-row__content-block
-  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги)) span
+  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги),:contains(Ідентифікатор скарги)) span
   ...  elThatHasValueSelector=.pretense-row__more-info .pretense-phase__note:first
   [Return]  ${value}
 
@@ -1155,7 +1156,7 @@ izi отримати поле satisfied з вимоги
   ${attribute}=  Set Variable  satisfied
   ${value}=  izi find objectId element attribute  attribute=${attribute}  objectId=${complaintID}
   ...  wrapperElSelector=pretense-row .pretense-row__content-block
-  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги)) span
+  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги),:contains(Ідентифікатор скарги)) span
   ...  elThatHasValueSelector=.pretense-row__status
   ${value}=  convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
@@ -1165,8 +1166,8 @@ izi отримати поле cancellationReason з вимоги
   izi select claims tab
   ${value}=  izi find objectId element value  objectId=${complaintID}
   ...  wrapperElSelector=pretense-row .pretense-row__content-block
-  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги)) span
-  ...  elThatHasValueSelector=.pretense-row__more-info .pretense-phase__files:has(.pretense-phase__topic:contains(Вимогу було відкликано)) .pretense-phase__note
+  ...  elThatHasObjectIdSelector=.pretense-row__more-info .pretense-data__info p:has(strong:contains(Ідентифікатор вимоги),:contains(Ідентифікатор скарги)) span
+  ...  elThatHasValueSelector=.pretense-row__more-info .pretense-phase__files:has(.pretense-phase__topic:contains(Вимогу було відкликано),:contains(Скаргу було відкликано)) .pretense-phase__note
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле procurementMethodType
@@ -1472,7 +1473,7 @@ izi знайти на сторінці тендера посилання на а
 
 izi get document title from documents versions
   [Arguments]  ${documentsVersionsSelector}  ${docId}
-  ${value}=  Execute Javascript  return $('${documentsVersionsSelector} .documents-versions__row[docId="${docId}"] .documents-versions__name__url').text().trim()
+  ${value}=  Execute Javascript  return $('${documentsVersionsSelector} .documents-versions__row[docId="${docId}"] .documents-versions__name-val').text().trim()
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле documents[${index}].title
@@ -1797,4 +1798,23 @@ izi знайти на сторінці тендера поле lots[${lotIndex}]
   ${value}=   Execute Javascript  return $('.tender-lot .tender-lot-description__title').first().text().trim()
   [Return]  ${value}
 
+izi знайти на сторінці тендера поле features[${index}].title
+  ${value}=   Execute Javascript  return $('winner-criterias .winner-criterias__row:eq(${index}) .winner-criterias__name').text().trim()
+  [Return]  ${value}
+
 izi знайти на сторінці тендера поле features[${index}].description
+  ${value}=   Execute Javascript  return $('winner-criterias .winner-criterias__row:eq(${index}) .winner-criterias__name-col info-popup span div span').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле contracts[${index}].dateSigned
+  ${value}=   Execute Javascript  return $('contract-info:eq(${index}) .contract-info__date-signed').attr('przDateSigned')
+  ${value}=   izi convert izi date to prozorro date  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле documentOf документу ${doc_id}
+  ${attribute}=  Set Variable  przDocumentOf
+  ${value}=  Run Keyword  izi find objectId element attribute  attribute=${attribute}  objectId=${doc_id}
+  ...  wrapperElSelector=documents-versions .documents-versions__row
+  ...  elThatHasObjectIdSelector=.documents-versions__name-val
+  ...  elThatHasValueSelector=.documents-versions__name
+  [Return]  ${value}

@@ -31,7 +31,7 @@ Login
   Run Keyword If  '${username}' != 'izi_viewer'  Login  ${username}
 
 Пошук тендера по ідентифікатору
-  [Arguments]  ${username}  ${tender_uaid}
+  [Arguments]  ${username}  ${tender_uaid}  ${hz_ho_eto}=${Empty}
   [Documentation]
   izi перейти на сторінку тендеру  ${tender_uaid}
 
@@ -49,7 +49,7 @@ Login
 Отримати інформацію із лоту
   [Arguments]  ${username}  ${tender_uaid}  ${object_id}  ${field}
   izi перейти на сторінку тендеру  ${tender_uaid}
-  ${fieldPath}=  Отримати шлях до поля об’єкта    ${username}  ${field}  ${object_id}
+  ${fieldPath}=  Отримати шлях до поля об’єкта  ${username}  ${field}  ${object_id}
   Run Keyword And Return  izi знайти на сторінці лоту поле ${fieldPath}
 
 Отримати інформацію із предмету
