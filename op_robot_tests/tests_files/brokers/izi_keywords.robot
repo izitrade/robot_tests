@@ -873,19 +873,19 @@ izi знайти поле title документу ${doc_id} вимоги ${comp
 
 izi знайти на сторінці тендера поле contracts[${index}].status
   Sleep   3
-  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__status").text().trim()
+  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__status").text().trim() || $("contract-info:eq(0) .contract-info__status").text().trim()
   ${value}=  convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле contracts[${index}].value.amount
   Sleep   3
-  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__contract-value").text().trim()
+  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__contract-value").text().trim() || $("contract-info:eq(0) .contract-info__contract-value").text().trim()
   ${value}=  izi convert izi number to prozorro number  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле contracts[${index}].value.amountNet
   Sleep   3
-  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__contract-value-net").text().trim()
+  ${value}=  Execute Javascript  return $("contract-info:eq(${index}) .contract-info__contract-value-net").text().trim() || $("contract-info:eq(0) .contract-info__contract-value-net").text().trim()
   ${value}=  izi convert izi number to prozorro number  ${value}
   [Return]  ${value}
 
@@ -1818,5 +1818,3 @@ izi знайти на сторінці тендера поле documentOf док
   ...  elThatHasObjectIdSelector=.documents-versions__name-val
   ...  elThatHasValueSelector=.documents-versions__name
   [Return]  ${value}
-
-
