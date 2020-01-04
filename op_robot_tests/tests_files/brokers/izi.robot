@@ -31,7 +31,7 @@ Login
   Run Keyword If  '${username}' != 'izi_viewer'  Login  ${username}
 
 Пошук тендера по ідентифікатору
-  [Arguments]  ${username}  ${tender_uaid}
+  [Arguments]  ${username}  ${tender_uaid}  ${hz_ho_eto}=${Empty}
   [Documentation]
   izi перейти на сторінку тендеру  ${tender_uaid}
 
