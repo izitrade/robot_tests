@@ -320,3 +320,12 @@ Login
   Run Keyword And Return If  '${lotObjectId}' == '${None}'  izi знайти на сторінці тендера посилання на аукціон
   ${lotIndex}=  izi знайти index лоту за lotObjectId  ${lotObjectId}
   Run Keyword And Return  izi знайти на сторінці лоту ${lotIndex} посилання на аукціон
+
+Пошук угоди по ідентифікатору
+  [Arguments]  ${username}  ${agreement_id}  ${hz_ho_eto}=${Empty}
+  [Documentation]
+  izi перейти на сторінку угоди  ${agreement_id}
+
+Отримати інформацію із угоди
+  [Arguments]  ${username}  ${tender_uaid}  ${field}
+  Run Keyword And Return  izi знайти на сторінці угоди поле ${field}

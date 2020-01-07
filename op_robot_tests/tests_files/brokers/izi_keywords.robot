@@ -1465,6 +1465,7 @@ izi змінити документ в пропозиції тендера
 
 izi знайти на сторінці лоту ${lotIndex} посилання на аукціон
   izi обрати лот ${lotIndex}
+  Capture Page Screenshot
   Run Keyword And Return  izi знайти на сторінці тендера посилання на аукціон
 
 izi знайти на сторінці тендера посилання на аукціон
@@ -1818,3 +1819,49 @@ izi знайти на сторінці тендера поле documentOf док
   ...  elThatHasObjectIdSelector=.documents-versions__name-val
   ...  elThatHasValueSelector=.documents-versions__name
   [Return]  ${value}
+
+izi знайти на сторінці тендера поле maxAwardsCount
+  ${value}=   Execute Javascript  return $('.tender-info-notes ul li:contains(Максимальна кількість учасників) span').text().trim()
+  ${value}=  Convert To Number  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле agreementDuration
+  ${value}=   Execute Javascript  return $('.tender-info-notes ul li:contains(Строк дії рамкової угоди) span').text().trim()
+  ${value}=  Convert To Number  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле agreements[${index}].status
+  ${value}=   Execute Javascript  return $('.contract-info__status').text().trim()  #this is costyl witno no Index use, but it should work || $('.agreement-info:eq(${index}) .contract-info__status').text().trim()
+  ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле agreements[${index}].agreementID
+  ${value}=   Execute Javascript  return $('.agreement-info:eq(${index}) .contract-info__topic span:first').text().split(" ").pop() || $('.agreement-info:eq(0) .contract-info__topic span:first').text().split(" ").pop()
+  [Return]  ${value}
+
+izi перейти на сторінку угоди
+  [Arguments]  ${agreement_id}
+  Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_id}
+  Wait Until Page Contains Element  css=agreement-page  15
+  Sleep  500ms
+
+izi знайти на сторінці угоди поле changes[${changeIndex}].rationaleType
+  Wait Until Page Contains Element  css=agreement-page  15
+  ${value}=   Execute Javascript  return $("p").has("strong:contains(Обґрунтування змін згідно закону)").eq(${changeIndex}).text().split(":").pop().trim()
+  ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці угоди поле changes[${changeIndex}].rationale
+  Wait Until Page Contains Element  css=agreement-page  15
+  ${value}=   Execute Javascript  return $("p").has("strong:contains(Опис причин внесення змін)").eq(${changeIndex}).text().split(":").pop().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці угоди поле changes[${changeIndex}].status
+  Wait Until Page Contains Element  css=agreement-page  15
+  ${value}=   Execute Javascript  return $(".contract-page__status").has("strong:contains(Статус додаткової угоди)").eq(${changeIndex}).find(".contract-page__status-item").text().split(":").pop().trim()
+  ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
+  [Return]  ${value}
+
+
+
+
