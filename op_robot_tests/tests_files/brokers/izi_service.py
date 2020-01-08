@@ -16,7 +16,7 @@ def convert_izi_string_to_prozorro_string(string):
     }.get(string, string)
 
 def get(url):
-    response = requests.get(url, timeout=2)
+    response = requests.get(url, timeout=10)
     return munch.munchify({
         "data": response.json(),
         "status_code": response.status_code

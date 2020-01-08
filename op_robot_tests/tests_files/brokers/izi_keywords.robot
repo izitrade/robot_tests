@@ -77,8 +77,13 @@ izi checkbox check change
 
 izi update tender
   [Arguments]  ${tenderUaId}
-  ${tenderId}=  izi get tenderId by tenderUaId  ${tenderUaId}
-  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/tenders/sync/${tenderId}
+
+  ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
+  ${ARTIFACT}=  load_data_from  ${file_path}
+  #${tenderId}=  izi get tenderId by tenderUaId  ${tenderUaId}
+  #${tenderJson}=  izi get tenderJson by tenderUaId    ${tenderUaId}
+  #${tenderId}=  Set Variable  ${tenderJson.originId}
+  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/tenders/sync/${ARTIFACT.tender_id}
   ${response}=  izi_service.get  ${url}
   ${statusCode}=	Get Variable Value  ${response.status_code}
   Run Keyword If  ${statusCode} != 200  Fail  неможливо виконати запит на ручну синхронізацію тендеру, статус ${statusCode}
@@ -88,12 +93,18 @@ izi get page lots count
 	${lotsCount}=	Execute Javascript	return $('lot-tabs .lot-tabs__tab').length
   [Return]  ${lotsCount}
 
-izi get tenderId by tenderUaId
+#izi get tenderId by tenderUaId
+#  [Arguments]  ${tenderUaId}
+#  Log  ${ROLE}
+#  ${tenderOwner}=  Run Keyword If  '${ROLE}' != 'tender_owner'  Set Variable  ${BROKERS.Quinta.roles.tender_owner}
+#  ...  ELSE  Set Variable  ${BROKERS['${BROKER}'].roles.tender_owner}
+#  Run Keyword And Return  openprocurement_client.Отримати internal id по UAid  ${tenderOwner}  ${tenderUaId}
+
+izi get tenderJson by tenderUaId
   [Arguments]  ${tenderUaId}
-  Log  ${ROLE}
-  ${tenderOwner}=  Run Keyword If  '${ROLE}' != 'tender_owner'  Set Variable  ${BROKERS.Quinta.roles.tender_owner}
-  ...  ELSE  Set Variable  ${BROKERS['${BROKER}'].roles.tender_owner}
-  Run Keyword And Return  openprocurement_client.Отримати internal id по UAid  ${tenderOwner}  ${tenderUaId}
+  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/tenders/${tenderUaId}
+  ${response}=  izi_service.get  ${url}
+  [Return]  ${response.data}
 
 izi convert izi date to prozorro date
   [Arguments]  ${dateFieldText}
@@ -1817,4 +1828,48 @@ izi знайти на сторінці тендера поле documentOf док
   ...  wrapperElSelector=documents-versions .documents-versions__row
   ...  elThatHasObjectIdSelector=.documents-versions__name-val
   ...  elThatHasValueSelector=.documents-versions__name
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле minimalStepPercentage
+  ${attribute}=  Set Variable  przMinimalStepPercentage
+  ${value}=   Execute Javascript  return +$('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi знайти на сторінці лоту ${lotIndex} поле minimalStepPercentage
+  Run keyword and return  izi знайти на сторінці тендера поле lots[${lotIndex}].minimalStepPercentage
+
+izi знайти на сторінці тендера поле lots[${lotIndex}].minimalStepPercentage
+  izi обрати лот ${lotIndex}
+  ${attribute}=  Set Variable  przMinimalStepPercentage
+  ${value}=   Execute Javascript  return +$('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле NBUdiscountRate
+  ${attribute}=  Set Variable  przNbuDiscountRate
+  ${value}=   Execute Javascript  return +$('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле fundingKind
+  ${attribute}=  Set Variable  przFundingKind
+  ${value}=   Execute Javascript  return $('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi знайти на сторінці лоту ${lotIndex} поле fundingKind
+  izi обрати лот ${lotIndex}
+  ${attribute}=  Set Variable  przFundingKind
+  ${value}=   Execute Javascript  return $('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле yearlyPaymentsPercentageRange
+  ${attribute}=  Set Variable  przYearlyPaymentsPercentageRange
+  ${value}=   Execute Javascript  return +$('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi знайти на сторінці лоту ${lotIndex} поле yearlyPaymentsPercentageRange
+  Run keyword and return  izi знайти на сторінці тендера поле lots[${lotIndex}].yearlyPaymentsPercentageRange
+
+izi знайти на сторінці тендера поле lots[${lotIndex}].yearlyPaymentsPercentageRange
+  izi обрати лот ${lotIndex}
+  ${attribute}=  Set Variable  przYearlyPaymentsPercentageRange
+  ${value}=   Execute Javascript  return +$('tender-lot-info notes li[${attribute}]').attr('${attribute}')
   [Return]  ${value}

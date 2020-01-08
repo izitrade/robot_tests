@@ -28,31 +28,31 @@ Default:
             # accelerator: Integer value
             # This is not a name of period
             # Please refer to API documentation to find out what's this
-            accelerator: 1440
+            accelerator: 10000
         openua:
-            accelerator: 1440
+            accelerator: 10000
             tender:  [0, 15]
             # Please remember that openUA, openEU and openUA_defense procedures
             # forbid anyone to set or modify enquiryPeriod
             # (it is set automatically)
         openeu:
-            accelerator: 1440
+            accelerator: 10000
             tender:  [0, 30]
         openua_defense:
-            accelerator: 1440
+            accelerator: 10000
             tender:  [0, 6]
         open_competitive_dialogue:
-            accelerator: 1440
+            accelerator: 10000
             tender:  [0, 30]
         open_esco:
-             accelerator: 1440
+             accelerator: 10000
              enquiry: [0, 15]
              tender:  [0, 30]
         open_framework:
-             accelerator: 1440
+             accelerator: 10000
              tender:  [0, 30]
         framework_selection:
-             accelerator: 360
+             accelerator: 10000
     # Synchronization delay, in seconds
     timeout_on_wait: 300
 Quinta:

@@ -214,6 +214,12 @@ Login
   [Arguments]  ${username}  ${tender_uaid}  ${complaintID}  ${cancellation_data}
   izi.Скасувати вимогу про виправлення умов закупівлі  ${username}  ${tender_uaid}  ${complaintID}  ${cancellation_data}
 
+Створити скаргу про виправлення визначення переможця
+  [Arguments]  ${username}  ${tender_uaid}  ${claim}  ${award_index}  ${document}
+  izi перейти на сторінку тендеру  ${tender_uaid}
+  ${complaintID}=  izi створити вимогу про виправлення визначення переможця  ${tender_uaid}  ${claim}  ${award_index}  ${document}
+  [Return]  ${complaintID}
+
 Створити вимогу про виправлення визначення переможця
   [Arguments]  ${username}  ${tender_uaid}  ${claim}  ${award_index}  ${document}
   izi перейти на сторінку тендеру  ${tender_uaid}
