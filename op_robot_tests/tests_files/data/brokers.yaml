@@ -50,7 +50,7 @@ Default:
              tender:  [0, 10]
         open_framework:
              accelerator: 1600
-             tender:  [0, 10]
+             tender:  [0, 30]
         framework_selection:
              accelerator: 360
     # Synchronization delay, in seconds

@@ -328,10 +328,11 @@ Login
   Run Keyword And Return  izi знайти на сторінці лоту ${lotIndex} посилання на аукціон
 
 Пошук угоди по ідентифікатору
-  [Arguments]  ${username}  ${agreement_id}  ${hz_ho_eto}=${Empty}
+  [Arguments]  ${username}  ${agreement_uaid}  ${hz_ho_eto}=${Empty}
   [Documentation]
-  izi перейти на сторінку угоди  ${agreement_id}
+  izi перейти на сторінку угоди  ${agreement_uaid}
 
 Отримати інформацію із угоди
-  [Arguments]  ${username}  ${tender_uaid}  ${field}
+  [Arguments]  ${username}  ${agreement_uaid}  ${field}
+  izi перейти на сторінку угоди   ${agreement_uaid}
   Run Keyword And Return  izi знайти на сторінці угоди поле ${field}

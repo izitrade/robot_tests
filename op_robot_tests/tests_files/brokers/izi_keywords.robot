@@ -77,12 +77,13 @@ izi checkbox check change
 
 izi update tender
   [Arguments]  ${tenderUaId}
-  ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
-  ${ARTIFACT}=  load_data_from  ${file_path}
-  #${tenderId}=  izi get tenderId by tenderUaId  ${tenderUaId}
+  #${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
+  #${ARTIFACT}=  load_data_from  ${file_path}
   #${tenderJson}=  izi get tenderJson by tenderUaId    ${tenderUaId}
   #${tenderId}=  Set Variable  ${tenderJson.originId}
-  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/tenders/sync/${ARTIFACT.tender_id}
+  ${tenderId}=  izi get tenderId by tenderUaId  ${tenderUaId}
+  #${tenderId}=  izi quinta get tenderId by tenderUaId   ${tenderUaId}
+  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/tenders/sync/${tenderId}
   ${response}=  izi_service.get  ${url}
   ${statusCode}=	Get Variable Value  ${response.status_code}
   Run Keyword If  ${statusCode} != 200  Fail  неможливо виконати запит на ручну синхронізацію тендеру, статус ${statusCode}
@@ -92,12 +93,12 @@ izi get page lots count
 	${lotsCount}=	Execute Javascript	return $('lot-tabs .lot-tabs__tab').length
   [Return]  ${lotsCount}
 
-#izi get tenderId by tenderUaId
-#  [Arguments]  ${tenderUaId}
-#  Log  ${ROLE}
-#  ${tenderOwner}=  Run Keyword If  '${ROLE}' != 'tender_owner'  Set Variable  ${BROKERS.Quinta.roles.tender_owner}
-#  ...  ELSE  Set Variable  ${BROKERS['${BROKER}'].roles.tender_owner}
-#  Run Keyword And Return  openprocurement_client.Отримати internal id по UAid  ${tenderOwner}  ${tenderUaId}
+izi get tenderId by tenderUaId
+  [Arguments]  ${tenderUaId}
+  Log  ${ROLE}
+  ${tenderOwner}=  Run Keyword If  '${ROLE}' != 'tender_owner'  Set Variable  ${BROKERS.Quinta.roles.tender_owner}
+  ...  ELSE  Set Variable  ${BROKERS['${BROKER}'].roles.tender_owner}
+  Run Keyword And Return  openprocurement_client.Отримати internal id по UAid  ${tenderOwner}  ${tenderUaId}
 
 izi get tenderJson by tenderUaId
   [Arguments]  ${tenderUaId}
@@ -1849,29 +1850,32 @@ izi знайти на сторінці тендера поле agreements[${inde
   ${value}=   Execute Javascript  return $('.agreement-info:eq(${index}) .contract-info__topic span:first').text().split(" ").pop() || $('.agreement-info:eq(0) .contract-info__topic span:first').text().split(" ").pop()
   [Return]  ${value}
 
+izi чи я на сторінці угоди ${agreement_uaid}
+  ${currentPageAgreementCode}=  Execute Javascript  return $('agreement-page[agreementCode]').attr('agreementCode')
+  Return From Keyword If  '${currentPageAgreementCode}' == '${agreement_uaid}'  TRUE
+  Return From Keyword  FALSE
+
 izi перейти на сторінку угоди
-  [Arguments]  ${agreement_id}
-  Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_id}
-  Wait Until Page Contains Element  css=agreement-page  15
+  [Arguments]  ${agreement_uaid}
+  ${isAmOnPage}=  izi чи я на сторінці угоди ${agreement_uaid}
+  Run Keyword If   '${isAmOnPage}' == 'FALSE'   Run Keywords
+  ...   Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_uaid}
+  ...   AND   Wait Until Page Contains Element  css=agreement-page  15
   Sleep  500ms
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationaleType
-  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $("p").has("strong:contains(Обґрунтування змін згідно закону)").eq(${changeIndex}).text().split(":").pop().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationale
-  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $("p").has("strong:contains(Опис причин внесення змін)").eq(${changeIndex}).text().split(":").pop().trim()
   [Return]  ${value}
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].status
-  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $(".contract-page__status").has("strong:contains(Статус додаткової угоди)").eq(${changeIndex}).find(".contract-page__status-item").text().split(":").pop().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
-#end alex
 
 izi знайти на сторінці тендера поле minimalStepPercentage
   ${attribute}=  Set Variable  przMinimalStepPercentage
