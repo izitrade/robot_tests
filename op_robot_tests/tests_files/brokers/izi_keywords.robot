@@ -77,8 +77,6 @@ izi checkbox check change
 
 izi update tender
   [Arguments]  ${tenderUaId}
-  #${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
-  #${ARTIFACT}=  load_data_from  ${file_path}
   #${tenderJson}=  izi get tenderJson by tenderUaId    ${tenderUaId}
   #${tenderId}=  Set Variable  ${tenderJson.originId}
   ${tenderId}=  izi get tenderId by tenderUaId  ${tenderUaId}
@@ -95,10 +93,14 @@ izi get page lots count
 
 izi get tenderId by tenderUaId
   [Arguments]  ${tenderUaId}
-  Log  ${ROLE}
   ${tenderOwner}=  Run Keyword If  '${ROLE}' != 'tender_owner'  Set Variable  ${BROKERS.Quinta.roles.tender_owner}
   ...  ELSE  Set Variable  ${BROKERS['${BROKER}'].roles.tender_owner}
-  Run Keyword And Return  openprocurement_client.Отримати internal id по UAid  ${tenderOwner}  ${tenderUaId}
+  ${status}   ${tenderId}=  Run Keyword And Ignore Error   openprocurement_client.Отримати internal id по UAid  ${tenderOwner}  ${tenderUaId}
+  Run Keyword If  '${status}' == 'PASS'  Return From Keyword  ${tenderId}
+  ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
+  ${ARTIFACT}=  load_data_from  ${file_pat h}
+  Log   guest tenderId from artifact file => ${ARTIFACT.tender_id}  WARN
+  [Return]  ${ARTIFACT.tender_id}
 
 izi get tenderJson by tenderUaId
   [Arguments]  ${tenderUaId}
