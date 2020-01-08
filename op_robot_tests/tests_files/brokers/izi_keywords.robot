@@ -1878,7 +1878,7 @@ izi чи я на сторінці угоди ${agreement_uaid}
 
 izi перейти на сторінку угоди
   [Arguments]  ${agreement_uaid}
-  izi sync agreement
+  izi sync agreement  ${agreement_uaid}
   Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_uaid}
   #${isAmOnPage}=  izi чи я на сторінці угоди ${agreement_uaid}
   #Run Keyword If   '${isAmOnPage}' == 'FALSE'   Run Keywords
