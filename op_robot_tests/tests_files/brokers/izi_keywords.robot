@@ -87,6 +87,15 @@ izi update tender
   Run Keyword If  ${statusCode} != 200  Fail  неможливо виконати запит на ручну синхронізацію тендеру, статус ${statusCode}
   Log  tender ${tenderUaId} updated ${url}  WARN
 
+izi sync agreement
+  [Arguments]  ${agreementUaId}
+  ${agreementId}=  izi get agreementId by agreementUaId  ${agreementUaId}
+  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/agreements/sync/${agreementUaId}
+  ${response}=  izi_service.get  ${url}
+  ${statusCode}=	Get Variable Value  ${response.status_code}
+  Run Keyword If  ${statusCode} != 200  Fail  неможливо виконати запит на ручну синхронізацію угоди, статус ${statusCode}
+  Log  agreement ${agreementUaId} updated ${url}  WARN
+
 izi get page lots count
 	${lotsCount}=	Execute Javascript	return $('lot-tabs .lot-tabs__tab').length
   [Return]  ${lotsCount}
@@ -101,6 +110,16 @@ izi get tenderId by tenderUaId
   ${ARTIFACT}=  load_data_from  ${file_pat h}
   Log   guest tenderId from artifact file => ${ARTIFACT.tender_id}  WARN
   [Return]  ${ARTIFACT.tender_id}
+
+izi get agreementId by agreementUaId
+  [Arguments]  ${agreementUaId}
+  ${tenderOwner}=  Run Keyword If  '${ROLE}' != 'tender_owner'  Set Variable  ${BROKERS.Quinta.roles.tender_owner}
+  ...  ELSE  Set Variable  ${BROKERS['${BROKER}'].roles.tender_owner}
+  ${status}   ${agreementId}=  Run Keyword And Ignore Error   openprocurement_client.Отримати internal id угоди по UAid  ${tenderOwner}  ${agreementUaId}
+  Run Keyword If  '${status}' == 'PASS'  Return From Keyword  ${agreementId}
+  ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
+  ${ARTIFACT}=  load_data_from  ${file_pat h}
+  Log   guest agreementId from artifact file => ${ARTIFACT.agreement_id}  WARN
 
 izi get tenderJson by tenderUaId
   [Arguments]  ${tenderUaId}
@@ -1859,11 +1878,13 @@ izi чи я на сторінці угоди ${agreement_uaid}
 
 izi перейти на сторінку угоди
   [Arguments]  ${agreement_uaid}
-  ${isAmOnPage}=  izi чи я на сторінці угоди ${agreement_uaid}
-  Run Keyword If   '${isAmOnPage}' == 'FALSE'   Run Keywords
-  ...   Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_uaid}
-  ...   AND   Wait Until Page Contains Element  css=agreement-page  15
-  Sleep  500ms
+  izi sync agreement
+  Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_uaid}
+  #${isAmOnPage}=  izi чи я на сторінці угоди ${agreement_uaid}
+  #Run Keyword If   '${isAmOnPage}' == 'FALSE'   Run Keywords
+  #...   Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_uaid}
+  #...   AND   Wait Until Page Contains Element  css=agreement-page  15
+  #...   Sleep  500ms
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationaleType
   ${value}=   Execute Javascript  return $("p").has("strong:contains(Обґрунтування змін згідно закону)").eq(${changeIndex}).text().split(":").pop().trim()
