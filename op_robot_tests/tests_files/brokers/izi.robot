@@ -336,3 +336,18 @@ Login
   [Arguments]  ${username}  ${agreement_uaid}  ${field}
   izi перейти на сторінку угоди   ${agreement_uaid}
   Run Keyword And Return  izi знайти на сторінці угоди поле ${field}
+
+Оновити сторінку з планом
+  [Arguments]  ${username}  ${planUaId}
+  ${isAmOnPage}=  izi чи я на сторінці плану ${planUaId}
+  Run Keyword If  '${isAmOnPage}' == 'FALSE'  Reload Page
+  ...  ELSE  izi перейти на сторінку плану  ${planUaId}
+
+Пошук плану по ідентифікатору
+  [Arguments]  ${username}  ${planUaId}
+  izi перейти на сторінку плану  ${planUaId}
+
+Отримати інформацію із плану
+  [Arguments]  ${username}  ${planUaId}  ${field}
+  izi перейти на сторінку плану  ${planUaId}
+  Run Keyword And Return  izi знайти на сторінці плану поле ${field}
