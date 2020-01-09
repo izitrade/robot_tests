@@ -43,6 +43,8 @@ Login
 
 Отримати інформацію із тендера
   [Arguments]  ${username}  ${tender_uaid}  ${field}
+  ${itIsPlanMZF}=  Execute Javascript  return /UA-P/.test('${tender_uaid}')
+  Run Keyword And Return If   '${itIsPlanMZF}' == 'True'  izi.Отримати інформацію із плану   ${username}  ${tender_uaid}  ${field}
   izi перейти на сторінку тендеру  ${tender_uaid}
   Run Keyword And Return  izi знайти на сторінці тендера поле ${field}
 
