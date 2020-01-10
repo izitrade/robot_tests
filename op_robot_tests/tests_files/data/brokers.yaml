@@ -58,24 +58,24 @@ Default:
 Quinta:
     intervals:
         default:
-            enquiry: [0, 2]
-            tender:  [0, 15]
+            enquiry: [0, 20]
+            tender:  [0, 20]
         openua:
-            tender:  [1, 15]
+            tender:  [1, 30]
         openeu:
-            tender:  [1, 15]
+            tender:  [1, 35]
         openua_defense:
-            tender:  [0, 15]
+            tender:  [0, 20]
         open_competitive_dialogue:
             accelerator: 1440
-            tender:  [0, 15]
+            tender:  [0, 30]
         open_esco:
              accelerator: 1600
-             enquiry: [0, 1]
-             tender:  [0, 15]
+             enquiry: [0, 15]
+             tender:  [0, 30]
         open_framework:
              accelerator: 1600
-             tender:  [0, 15]
+             tender:  [0, 30]
         framework_selection:
              accelerator: 360
     keywords_file: openprocurement_client
@@ -513,25 +513,25 @@ izi:
     backendUrl: "https://api-test.izi.trade"
     intervals:
         default:
-            enquiry: [0, 2]
+            enquiry: [0, 20]
             tender:  [0, 10]
-            accelerator: 1600
+            accelerator: 1440
         belowThreshold:
-            enquiry: [0, 2]
-            tender:  [0, 15]
+            enquiry: [0, 6]
+            tender:  [0, 6]
             accelerator: 300
         openua:
             tender:  [0, 15]
-            accelerator: 1600
+            accelerator: 1440
         openeu:
-            tender:  [0, 15]
-            accelerator: 1600
+            tender:  [0, 35]
+            accelerator: 1440
         openua_defense:
-            tender:  [0, 15]
-            accelerator: 1600
+            tender:  [0, 20]
+            accelerator: 1440
         open_competitive_dialogue:
-            tender:  [0, 15]
-            accelerator: 1600
+            tender:  [0, 35]
+            accelerator: 1440
     keywords_file: izi
     roles:
         provider:       izi_provider

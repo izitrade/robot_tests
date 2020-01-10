@@ -1360,9 +1360,10 @@ izi bid-submit-form change document
   Run Keyword And Return If  '${docId}' == '${None}'  Fail
   Set To Dictionary  ${IZI_TMP_DICT}  ${docObjectId}=${docId}
   ${title}=  izi document-manage get document title  docId=${docId}  documentManageSelector=${documentManageSelector}
-  ${url}=  izi document-manage get document url  docId=${docId}  documentManageSelector=${documentManageSelector}
-  ${filePath}=  Set Variable  ${OUTPUT_DIR}${/}${title}
-  ${filename}=  download_file_from_url  ${url}  ${filePath}
+  #${url}=  izi document-manage get document url  docId=${docId}  documentManageSelector=${documentManageSelector}
+  #${filePath}=  Set Variable  ${OUTPUT_DIR}${/}${title}
+  #${filename}=  download_file_from_url  ${url}  ${filePath}
+  ${filePath}  ${fileName}  ${fileContent}  create_fake_doc
   Run Keyword And Return  izi document-manage add document new version
   ...  documentManageSelector=${documentManageSelector}
   ...  filePath=${filePath}
@@ -1371,7 +1372,6 @@ izi bid-submit-form change document
   ...  confidentialityText=${confidentialityText}
   ...  isDescriptionDecision=${isDescriptionDecision}
   ...  docId=${docId}
-
 
 izi document-manage get document url
   [Arguments]  ${docId}  ${documentManageSelector}
@@ -1496,6 +1496,11 @@ izi знайти на сторінці тендера поле пропозиц�
   ${value}=  Execute Javascript  return $('bid-status[przBidStatus]').attr('przBidStatus')
   [Return]  ${value}
 
+izi змінити на сторінці тендера поле пропозиції status на None
+  izi bid-submit-form open form
+  izi bid-submit-form submit form
+  izi bid-submit-form close submit-form by clicking X
+
 izi змінити на сторінці тендера поле пропозиції status на pending
   izi bid-submit-form open form
   izi bid-submit-form submit form
@@ -1538,7 +1543,7 @@ izi змінити документ в пропозиції лота
 izi змінити документ в пропозиції тендера
   [Arguments]  ${docObjectId}  ${docData}
   izi bid-submit-form open form
-  Log  ${docData}
+  Log  ${docData}  WARN
   ${confidentialityText}=  Get Variable Value  ${docData.data.confidentialityRationale}  ${None}
   ${docType}=  Set Variable  ${None}  #this test must receive this values :(
   ${isDescriptionDecision}=  Set Variable  ${None}  #this test must receive this values :(
@@ -2037,3 +2042,15 @@ izi знайти план та перейти на сторінку
   Click Element  css=search-results plan-info:first-child .tender-info__footer a
   Wait Until Page Contains Element  css=plan-page  15
   Sleep   2s
+
+izi знайти на сторінці тендера поле auctionPeriod.startDate
+  ${value}=   Execute Javascript    return $('.tender-lot-status__auction-status').attr('auctionStartDate')
+  ${value}=  izi convert izi date to prozorro date  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці лоту ${lotIndex} поле auctionPeriod.startDate
+  izi обрати лот ${lotIndex}
+  Run Keyword And Return    izi знайти на сторінці тендера поле auctionPeriod.startDate
+
+izi знайти на сторінці тендера поле lots[${lotIndex}].auctionPeriod.startDate
+  Run Keyword And Return    izi знайти на сторінці лоту ${lotIndex} поле auctionPeriod.startDate
