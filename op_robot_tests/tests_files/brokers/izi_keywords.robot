@@ -896,10 +896,12 @@ izi знайти на сторінці тендеру запитання ${quest
 izi знайти index лоту за lotObjectId
   [Arguments]  ${lotObjectId}
   ${lotsCount}=  izi get page lots count
+  ${lotIndex}=    set variable    ${EMPTY}
   :FOR  ${index}  IN RANGE  ${lotsCount}
+  \   ${lotIndex}=  set variable  ${index}
   \  ${title}=  Run Keyword  izi знайти на сторінці лоту ${index} поле title
   \  Exit For Loop If  "${lotObjectId}" in "${title}"
-  [Return]  ${index}
+  [Return]  ${lotIndex}
 
 izi знайти на сторінці тендера поле title документу ${doc_id}
   ${value}=  izi find objectId element value  objectId=${doc_id}
