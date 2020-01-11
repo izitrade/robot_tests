@@ -536,6 +536,7 @@ izi:
     roles:
         provider:       izi_provider
         provider1:      izi_provider1
+        provider2:      izi_provider1
         viewer:         izi_viewer
     timeout_on_wait: 5
 ukrtender:
