@@ -468,12 +468,22 @@ izi знайти на сторінці тендера поле deliveryDate.star
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
+izi знайти на сторінці тендера поле items[${item_index}].deliveryDate.startDate
+  ${value}=   Execute Javascript    return $('.items-info .items-info__row:eq(${item_index}) .items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:first').text()
+  ${value}=  izi convert izi date to prozorro date  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле items[${item_index}].deliveryDate.endDate
+  ${value}=   Execute Javascript    return $('.items-info .items-info__row:eq(${item_index}) .items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last ').text()
+  ${value}=  izi convert izi date to prozorro date  ${value}
+  [Return]  ${value}
+
 izi знайти на сторінці тендера поле items[${item_index}].deliveryDate.endDate предмету ${item_id}
   ${value}=  izi find objectId element value
   ...  objectId=${item_id}
   ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:last
+  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last 
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -666,7 +676,7 @@ izi знайти на сторінці лоту ${index} поле deliveryDate.s
   ...  objectId=${item_id}
   ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:first
+  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:first
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -677,7 +687,7 @@ izi знайти на сторінці лоту ${index} поле deliveryDate.e
   ...  objectId=${item_id}
   ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:last
+  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last 
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 

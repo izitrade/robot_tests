@@ -38,8 +38,10 @@ Login
 Оновити сторінку з тендером
   [Arguments]  ${username}  ${tender_uaid}
   ${isAmOnPage}=  izi чи я на сторінці тендеру ${tender_uaid}
-  Run Keyword If  '${isAmOnPage}' == 'FALSE'  Reload Page
-  ...  ELSE  izi перейти на сторінку тендеру  ${tender_uaid}
+  run keyword and return if  '${isAmOnPage}' == 'FALSE'  izi перейти на сторінку тендеру  ${tender_uaid}
+  Reload Page
+  Wait Until Page Contains Element  css=tender  15
+  Sleep  500ms
 
 Отримати інформацію із тендера
   [Arguments]  ${username}  ${tender_uaid}  ${field}
