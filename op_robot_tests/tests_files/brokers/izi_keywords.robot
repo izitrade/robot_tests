@@ -1716,7 +1716,7 @@ izi get countryName from iziAddressField
 
 izi get countryName from iziAddressString
   [Arguments]  ${addressString}
-  ${value}=  Execute Javascript  return "${addressString}".split(', ')[1].trim().split(' ')[0]
+  ${value}=  Execute Javascript  return "${addressString}".split(', ')[1].match(/(^[^\(]*)\(?.*/)[1].trim()
   [Return]  ${value}
 
 izi get countryName_ru from iziAddressField
