@@ -36,6 +36,12 @@ def get_time_with_offset(date):
     localized_date = time_zone.localize(date_obj)
     return localized_date.strftime('%Y-%m-%d %H:%M:%S.%f%z')
 
+def convert_dtstring_to_isoformat(date):
+    date_obj = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
+    time_zone = timezone('Europe/Kiev')
+    localized_date = time_zone.localize(date_obj)
+    return localized_date.isoformat()
+
 def get_izi_docType_by_prozorro_docType(przDocType):
     return {
         u"notice":u"1",
