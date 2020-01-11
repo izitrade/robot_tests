@@ -160,12 +160,12 @@ izi convert izi date to prozorro date
   [Arguments]  ${dateFieldText}
   &{results}  Execute Javascript  return (()=>{let [dateString, day = "", month = "", year = "", time = ""] = "${dateFieldText}".match(/^\\D*(\\d{1,2})\\.(\\d{1,2})\\.(\\d{4})(?:\\s(\\d{1,2}:\\d{1,2}))?$/) || []; return {day, month, year, time}})()
   ${date}=  Convert To String  ${results.year}-${results.month}-${results.day} ${results.time}
-  ${result}=  izi_service.get_time_with_offset  ${date}
+  ${result}=  izi_service.convert_dtstring_to_isoformat  ${date}
   [Return]  ${result}
 
 izi convert izi number to prozorro number
   [Arguments]  ${numberTextField}
-  ${number}  Execute Javascript  return (()=> +(("${numberTextField}".match(/^\\D*(\\d*[\\s,\\d]*).*$/) || [])[1] || "").replace(/\\s/g,'').replace(/,/g, '.').replace('.00', '') || 0)()
+  ${number}  Execute Javascript  return (()=> +(("${numberTextField}".match(/^\\D*(\\d*[\\s,\\d\\.]*).*$/) || [])[1] || "").replace(/\\s/g,'').replace(/,/g, '.').replace('.00', '') || 0)()
   [Return]  ${number}
 
 izi find objectId element value
@@ -2054,3 +2054,87 @@ izi знайти на сторінці лоту ${lotIndex} поле auctionPeri
 
 izi знайти на сторінці тендера поле lots[${lotIndex}].auctionPeriod.startDate
   Run Keyword And Return    izi знайти на сторінці лоту ${lotIndex} поле auctionPeriod.startDate
+
+izi знайти на сторінці плану поле tender.procurementMethodType
+  ${value}=  Execute Javascript		return $('.notes:not(.mobile) ul li strong:contains(Тип процедури:)+span').text().trim()
+	${value}=	izi_service.get_prozorro_pmtype_by_izi_pmtext	${value}
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле budget.amount
+  ${value}=  Execute Javascript  return $(".tender-details__price-val").first().text().trim()
+  ${value}=  izi convert izi number to prozorro number  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле budget.description
+  ${value}=  Execute Javascript  return $('.contract-page__preface:first').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле budget.currency
+  ${value}=  Execute Javascript  return $(".tender-details__price-curr").text().trim()
+  ${value}=  get_prozorro_curr_by_izi_curr  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле procuringEntity.name
+  Log  TODO  WARN
+  ${value}=  Execute Javascript  return $('.tender-details .tender-details__info p:has(strong:contains(Замовник:))+p').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле procuringEntity.identifier.scheme
+  ${value}=  Execute Javascript  return $('.tender-details .tender-details__more-info dl:has(strong:contains(Схема Ідентифікації:)) dd').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле procuringEntity.identifier.id
+  ${value}=  Execute Javascript  return $('.tender-details .tender-details__more-info dl:has(dt:contains(Код ЄДРПОУ:)) dd').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле procuringEntity.identifier.legalName
+  ${value}=  Execute Javascript  return $('.tender-details .tender-details__info p:has(strong:contains(Замовник:))+p').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле classification.description
+  Log  TODO  WARN
+  ${value}=  Execute Javascript  return $('.notes ul li strong:contains(Код ДК021):first+span').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле classification.scheme
+  Log  TODO  WARN
+  ${value}=  Execute Javascript  return $('.notes ul li strong:contains(Код ДК021):first').text().trim().slice(3, -1).trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле classification.id
+  ${value}=  Execute Javascript   return null
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].description
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__name .items-info__name-desc').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].quantity
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__number .items-info__uqnt').text().trim()
+  ${value}=  izi convert izi number to prozorro number  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].deliveryDate.endDate
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__popup p:contains(Період доставки: до) span').text().trim()
+  ${value}=  izi convert izi date to prozorro date  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].unit.code
+  ${value}=  Execute Javascript   return null
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].unit.name
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__number .items-info__uname').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].classification.description
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__popup .items-info__classification:first .items-info__classification-descr').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].classification.scheme
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__popup .items-info__classification:first .items-info__classification-scheme').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].classification.id
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__popup .items-info__classification:first .items-info__classification-id').text().trim()
+  [Return]  ${value}
