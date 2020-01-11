@@ -160,12 +160,12 @@ izi convert izi date to prozorro date
   [Arguments]  ${dateFieldText}
   &{results}  Execute Javascript  return (()=>{let [dateString, day = "", month = "", year = "", time = ""] = "${dateFieldText}".match(/^\\D*(\\d{1,2})\\.(\\d{1,2})\\.(\\d{4})(?:\\s(\\d{1,2}:\\d{1,2}))?$/) || []; return {day, month, year, time}})()
   ${date}=  Convert To String  ${results.year}-${results.month}-${results.day} ${results.time}
-  ${result}=  izi_service.get_time_with_offset  ${date}
+  ${result}=  izi_service.convert_dtstring_to_isoformat  ${date}
   [Return]  ${result}
 
 izi convert izi number to prozorro number
   [Arguments]  ${numberTextField}
-  ${number}  Execute Javascript  return (()=> +(("${numberTextField}".match(/^\\D*(\\d*[\\s,\\d]*).*$/) || [])[1] || "").replace(/\\s/g,'').replace(/,/g, '.').replace('.00', '') || 0)()
+  ${number}  Execute Javascript  return (()=> +(("${numberTextField}".match(/^\\D*(\\d*[\\s,\\d\\.]*).*$/) || [])[1] || "").replace(/\\s/g,'').replace(/,/g, '.').replace('.00', '') || 0)()
   [Return]  ${number}
 
 izi find objectId element value
@@ -1902,7 +1902,7 @@ izi знайти на сторінці тендера поле features[${index}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле contracts[${index}].dateSigned
-  ${value}=   Execute Javascript  return $('contract-info:eq(${index}) .contract-info__date-signed').attr('przDateSigned')
+  ${value}=   Execute Javascript  return $('contract-info:eq(${index}) .contract-info__date-signed').attr('przDateSigned') || $('contract-info:eq(0) .contract-info__date-signed').attr('przDateSigned')
   ${value}=   izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
