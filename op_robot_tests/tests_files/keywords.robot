@@ -41,7 +41,9 @@ Set Suite Variable With Default Value
 
 Порівняти системний і серверний час
   ${server_time}=  request  ${API_HOST_URL}  HEAD
+  log   server time=> ${server_time.headers['date']}   WARN
   ${local_time}=  Get current TZdate
+  log  local time => ${local_time}   WARN
   Log  ${server_time.headers['date']}
   Log  ${local_time}
   ${status}=  compare_date  ${server_time.headers['date']}  ${local_time}  5
