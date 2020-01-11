@@ -511,7 +511,7 @@
         {
             "additionalIdentifiers": [],
                 "address": {
-                    "countryName": "USA",
+                    "countryName": "Сполучені Штати Америки",
                     "locality": "Washington",
                     "postalCode": "20433",
                     "region": "DC",
@@ -534,7 +534,7 @@
         {
             "additionalIdentifiers": [],
                 "address": {
-                    "countryName": "Switzerland",
+                    "countryName": "Швейцарська Конфедерація",
                     "locality": "Geneva",
                     "postalCode": "1218",
                     "region": "Grand-Saconnex",
