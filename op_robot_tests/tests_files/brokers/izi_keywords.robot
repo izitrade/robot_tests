@@ -2132,7 +2132,7 @@ izi знайти на сторінці плану поле items[${item_index}].
   [Return]  ${value}
 
 izi знайти на сторінці плану поле items[${item_index}].unit.code
-  ${value}=  Execute Javascript   return null
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__number .items-info__uname').attr('przItemUnitCode').trim()
   [Return]  ${value}
 
 izi знайти на сторінці плану поле items[${item_index}].unit.name
