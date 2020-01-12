@@ -23,12 +23,12 @@ Default:
             #
             # First number in list:  Delay before period starts (for startDate)
             # Second number in list: Duration of period (for endDate)
-            enquiry: [0, 2]
-            tender:  [0, 15]
+            enquiry: [0, 1]
+            tender:  [0, 10]
             # accelerator: Integer value
             # This is not a name of period
             # Please refer to API documentation to find out what's this
-            accelerator: 1600
+            accelerator: 6000
         openua:
             accelerator: 1600
             tender:  [0, 15]
@@ -36,48 +36,48 @@ Default:
             # forbid anyone to set or modify enquiryPeriod
             # (it is set automatically)
         openeu:
-            accelerator: 1600
+            accelerator: 6000
             tender:  [0, 10]
         openua_defense:
-            accelerator: 1600
+            accelerator: 6000
             tender:  [0, 6]
         open_competitive_dialogue:
-            accelerator: 1600
+            accelerator: 6000
             tender:  [0, 10]
         open_esco:
-             accelerator: 1600
+             accelerator: 6000
              enquiry: [0, 10]
              tender:  [0, 10]
         open_framework:
-             accelerator: 1600
+             accelerator: 6000
              tender:  [0, 10]
         framework_selection:
-             accelerator: 360
+             accelerator: 6000
     # Synchronization delay, in seconds
     timeout_on_wait: 300
 Quinta:
     intervals:
         default:
-            enquiry: [0, 2]
-            tender:  [0, 15]
+            enquiry: [0, 1]
+            tender:  [0, 10]
         openua:
-            tender:  [1, 15]
+            tender:  [1, 10]
         openeu:
-            tender:  [1, 15]
+            tender:  [1, 10]
         openua_defense:
-            tender:  [0, 15]
+            tender:  [0, 10]
         open_competitive_dialogue:
-            accelerator: 1440
-            tender:  [0, 15]
+            accelerator: 6000
+            tender:  [0, 10]
         open_esco:
-             accelerator: 1600
+             accelerator: 6000
              enquiry: [0, 1]
-             tender:  [0, 15]
+             tender:  [0, 10]
         open_framework:
-             accelerator: 1600
-             tender:  [0, 15]
+             accelerator: 10000
+             tender:  [0, 10]
         framework_selection:
-             accelerator: 360
+             accelerator: 10000
     keywords_file: openprocurement_client
     roles:
         provider:       Tender_User
@@ -515,27 +515,28 @@ izi:
         default:
             enquiry: [0, 2]
             tender:  [0, 10]
-            accelerator: 1600
+            accelerator: 6000
         belowThreshold:
             enquiry: [0, 2]
-            tender:  [0, 15]
+            tender:  [0, 10]
             accelerator: 300
         openua:
-            tender:  [0, 15]
-            accelerator: 1600
+            tender:  [0, 10]
+            accelerator: 6000
         openeu:
-            tender:  [0, 15]
-            accelerator: 1600
+            tender:  [0, 10]
+            accelerator: 6000
         openua_defense:
-            tender:  [0, 15]
-            accelerator: 1600
+            tender:  [0, 10]
+            accelerator: 6000
         open_competitive_dialogue:
-            tender:  [0, 15]
-            accelerator: 1600
+            tender:  [0, 10]
+            accelerator: 6000
     keywords_file: izi
     roles:
         provider:       izi_provider
         provider1:      izi_provider1
+        provider2:      izi_provider2
         viewer:         izi_viewer
     timeout_on_wait: 5
 ukrtender:

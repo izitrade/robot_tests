@@ -24,7 +24,7 @@ def convert_izi_string_to_prozorro_string(string):
     }.get(string, string)
 
 def get(url):
-    response = requests.get(url, timeout=2)
+    response = requests.get(url, timeout=10)
     return munch.munchify({
         "data": response.json(),
         "status_code": response.status_code
@@ -35,6 +35,12 @@ def get_time_with_offset(date):
     time_zone = timezone('Europe/Kiev')
     localized_date = time_zone.localize(date_obj)
     return localized_date.strftime('%Y-%m-%d %H:%M:%S.%f%z')
+
+def convert_dtstring_to_isoformat(date):
+    date_obj = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M")
+    time_zone = timezone('Europe/Kiev')
+    localized_date = time_zone.localize(date_obj)
+    return localized_date.isoformat()
 
 def get_izi_docType_by_prozorro_docType(przDocType):
     return {
