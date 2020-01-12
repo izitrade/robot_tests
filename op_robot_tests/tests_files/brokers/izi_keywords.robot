@@ -99,7 +99,7 @@ izi update tender
 izi sync agreement
   [Arguments]  ${agreementUaId}
   ${agreementId}=  izi get agreementId by agreementUaId  ${agreementUaId}
-  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/agreements/sync/${agreementId}
+  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/agreements/sync/${agreementUaId}
   ${response}=  izi_service.get  ${url}
   ${statusCode}=	Get Variable Value  ${response.status_code}
   Run Keyword If  ${statusCode} != 200  Fail  неможливо виконати запит на ручну синхронізацію угоди, статус ${statusCode}
@@ -665,9 +665,9 @@ izi знайти на сторінці лоту ${index} поле value.valueAdd
 izi знайти на сторінці лоту ${index} поле description предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=.items-info .items-info__row
+  ...  wrapperElSelector=items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__name span:last-child
+  ...  elThatHasValueSelector=.items-info__name-desc
   [Return]  ${value}
 
 izi знайти на сторінці лоту ${index} поле deliveryDate.startDate предмету ${item_id}
@@ -676,7 +676,7 @@ izi знайти на сторінці лоту ${index} поле deliveryDate.s
   ...  objectId=${item_id}
   ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:first
+  ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:first
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -1716,7 +1716,7 @@ izi get countryName from iziAddressField
 
 izi get countryName from iziAddressString
   [Arguments]  ${addressString}
-  ${value}=  Execute Javascript  return "${addressString}".split(', ')[1].trim().split(' ')[0]
+  ${value}=  Execute Javascript  return "${addressString}".split(', ')[1].match(/(^[^\\(]*)\\(?.*/)[1].trim()
   [Return]  ${value}
 
 izi get countryName_ru from iziAddressField
@@ -1914,7 +1914,7 @@ izi знайти на сторінці тендера поле features[${index}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле contracts[${index}].dateSigned
-  ${value}=   Execute Javascript  return $('contract-info:eq(${index}) .contract-info__date-signed').attr('przDateSigned')
+  ${value}=   Execute Javascript  return $('contract-info:eq(${index}) .contract-info__date-signed').attr('przDateSigned') || $('contract-info:eq(0) .contract-info__date-signed').attr('przDateSigned')
   ${value}=   izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -1952,6 +1952,23 @@ izi чи я на сторінці угоди ${agreement_uaid}
 
 izi перейти на сторінку угоди
   [Arguments]  ${agreement_uaid}
+  izi sync agreement  ${agreement_uaid}
+  ${isAmOnPage}=  izi чи я на сторінці угоди ${agreement_uaid}
+  Run Keyword If   '${isAmOnPage}' == 'FALSE'   Run Keywords
+  ...   Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_uaid}
+  ...   AND   Wait Until Page Contains Element  css=agreement-page  15
+  ...   Sleep  500ms
+  Sleep  2s
+  ${factDateModified}=  izi get agreement dateModified   ${agreement_uaid}
+  ${factDateModified}=  Fetch From Left  ${factDateModified}  .
+  ${pageDateModified}=  Execute Javascript  return $('agreement-page[datemodified]').attr('datemodified')
+  ${pageDateModified}=  Fetch From Left  ${pageDateModified}  .
+  Log  agreement modified date="${factDateModified}"  WARN
+  Log  page agreement modified date="${pageDateModified}"  WARN
+  Return From Keyword If  '${factDateModified}' == '${pageDateModified}'
+  Log  agreement was modified, reloading page....  WARN
+  Reload Page
+  [Arguments]  ${agreement_uaid}
   izi sync agreement    ${agreement_uaid}
   ${isAmOnPage}=  izi чи я на сторінці угоди ${agreement_uaid}
   Run Keyword If   '${isAmOnPage}' == 'FALSE'   Run Keywords
@@ -1970,18 +1987,18 @@ izi перейти на сторінку угоди
   Sleep  500ms
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationaleType
-  Reload Page
+  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $("p").has("strong:contains(Обґрунтування змін згідно закону)").eq(${changeIndex}).text().split(":").pop().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationale
-  Reload Page
+  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $("p").has("strong:contains(Опис причин внесення змін)").eq(${changeIndex}).text().split(":").pop().trim()
   [Return]  ${value}
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].status
-  Reload Page
+  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $(".contract-page__status").has("strong:contains(Статус додаткової угоди)").eq(${changeIndex}).find(".contract-page__status-item").text().split(":").pop().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
@@ -2133,7 +2150,7 @@ izi знайти на сторінці плану поле items[${item_index}].
   [Return]  ${value}
 
 izi знайти на сторінці плану поле items[${item_index}].unit.code
-  ${value}=  Execute Javascript   return null
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__number .items-info__uname').attr('przItemUnitCode').trim()
   [Return]  ${value}
 
 izi знайти на сторінці плану поле items[${item_index}].unit.name
@@ -2151,6 +2168,3 @@ izi знайти на сторінці плану поле items[${item_index}].
 izi знайти на сторінці плану поле items[${item_index}].classification.id
   ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__popup .items-info__classification:first .items-info__classification-id').text().trim()
   [Return]  ${value}
-
-izi знайти на сторінці тендера поле lots[${index}].value.amount
-  Run keyword and return    izi знайти на сторінці лоту ${index} поле value.amount
