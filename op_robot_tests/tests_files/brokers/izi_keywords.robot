@@ -438,9 +438,9 @@ izi знайти на сторінці тендера поле value.currency
 
 izi знайти на сторінці тендера поле description предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
-  ...  elThatHasObjectIdSelector=.items-info__name .items-info__name-desc
-  ...  elThatHasValueSelector=.items-info__name .items-info__name-desc
+  ...  wrapperElSelector=.items-info .items-info__row
+  ...  elThatHasObjectIdSelector=.items-info__name
+  ...  elThatHasValueSelector=.items-info__name span:last-child
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле title нецінового показника ${feature_id}
@@ -483,7 +483,7 @@ izi знайти на сторінці тендера поле items[${item_inde
   ...  objectId=${item_id}
   ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last 
+  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -676,7 +676,7 @@ izi знайти на сторінці лоту ${index} поле deliveryDate.s
   ...  objectId=${item_id}
   ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:first
+  ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:first
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -687,7 +687,7 @@ izi знайти на сторінці лоту ${index} поле deliveryDate.e
   ...  objectId=${item_id}
   ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last 
+  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -1952,7 +1952,7 @@ izi чи я на сторінці угоди ${agreement_uaid}
 
 izi перейти на сторінку угоди
   [Arguments]  ${agreement_uaid}
-  izi sync agreement  ${agreement_uaid} 
+  izi sync agreement  ${agreement_uaid}
   ${isAmOnPage}=  izi чи я на сторінці угоди ${agreement_uaid}
   Run Keyword If   '${isAmOnPage}' == 'FALSE'   Run Keywords
   ...   Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_uaid}
@@ -1972,15 +1972,18 @@ izi перейти на сторінку угоди
   Sleep  500ms
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationaleType
+  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $("p").has("strong:contains(Обґрунтування змін згідно закону)").eq(${changeIndex}).text().split(":").pop().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationale
+  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $("p").has("strong:contains(Опис причин внесення змін)").eq(${changeIndex}).text().split(":").pop().trim()
   [Return]  ${value}
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].status
+  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $(".contract-page__status").has("strong:contains(Статус додаткової угоди)").eq(${changeIndex}).find(".contract-page__status-item").text().split(":").pop().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
@@ -2040,7 +2043,7 @@ izi чи я на сторінці плану ${planUaId}
   ${currentPlanCode}=  Execute Javascript  return $('plan-page[planCode]').attr('planCode')
   Return From Keyword If  '${currentPlanCode}' == '${planUaId}'  TRUE
   Return From Keyword  FALSE
-  
+
 izi перейти на сторінку пошуку плану
   [Arguments]  ${searchText}
   Go to  ${BROKERS['izi'].homepage}/plans?searchText=${searchText}
