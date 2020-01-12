@@ -126,7 +126,7 @@ izi get tenderId by tenderUaId
   Run Keyword If  '${status}' == 'PASS'  Return From Keyword  ${tenderId}
   ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
   ${ARTIFACT}=  load_data_from  ${file_path}
-  Log   gues tenderId from artifact file => ${ARTIFACT.tender_id}  WARN
+  Log   guess tenderId from artifact file => ${ARTIFACT.tender_id}  WARN
   [Return]  ${ARTIFACT.tender_id}
 
 izi get planId by planUaId
@@ -137,7 +137,7 @@ izi get planId by planUaId
   Run Keyword If  '${status}' == 'PASS'  Return From Keyword  ${planId}
   ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact_plan.yaml
   ${ARTIFACT}=  load_data_from  ${file_path}
-  Log   gues planId from artifact file => ${ARTIFACT.tender_id}  WARN
+  Log   guess planId from artifact file => ${ARTIFACT.tender_id}  WARN
   [Return]  ${ARTIFACT.tender_id}
 
 izi get agreementId by agreementUaId
@@ -148,7 +148,7 @@ izi get agreementId by agreementUaId
   Run Keyword If  '${status}' == 'PASS'  Return From Keyword  ${agreementId}
   ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
   ${ARTIFACT}=  load_data_from  ${file_path}
-  Log   guest agreementId from artifact file => ${ARTIFACT.agreement_id}  WARN
+  Log   guess agreementId from artifact file => ${ARTIFACT.agreement_id}  WARN
 
 izi get tenderJson by tenderUaId
   [Arguments]  ${tenderUaId}
@@ -1250,7 +1250,6 @@ izi знайти на сторінці тендера поле procurementMethod
 
 izi подати цінову пропозицію на тендер
   [Arguments]  ${bid}  ${lotIndex}=${None}
-  Log   ${bid}  WARN
   ${type}=  izi знайти на сторінці тендера поле procurementMethodType
   Run Keyword And Return If  '${type}' == 'esco'  izi подати цінову пропозицію на esco тендер  ${bid}  ${lotIndex}
   Run Keyword If  '${lotIndex}' != '${None}'  izi обрати лот ${lotIndex}
