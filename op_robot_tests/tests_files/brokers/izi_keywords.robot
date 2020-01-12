@@ -24,6 +24,15 @@ izi get tender dateModified
   ${dateModified}=		Get Variable Value	${response.data}
   [Return]	${dateModified}
 
+izi get agreement dateModified
+  [Arguments]   ${agreementUaId}
+	${url}=		Set Variable	${BROKERS.izi.backendUrl}/agreements/${agreementUaId}/dateModified
+	${response}=  izi_service.get  ${url}
+  ${statusCode}=	Get Variable Value  ${response.status_code}
+  Run Keyword And Return If	'${statusCode}' != '200'	Fail
+  ${dateModified}=		Get Variable Value	${response.data}
+  [Return]	${dateModified}
+
 izi get award docId by docIndex
 	[Arguments]  ${awardIndex}	${docIndex}
 	${tenderIziId}=  izi знайти на сторінці тендера поле tenderIziId
@@ -77,12 +86,33 @@ izi checkbox check change
 
 izi update tender
   [Arguments]  ${tenderUaId}
+  #${tenderJson}=  izi get tenderJson by tenderUaId    ${tenderUaId}
+  #${tenderId}=  Set Variable  ${tenderJson.originId}
   ${tenderId}=  izi get tenderId by tenderUaId  ${tenderUaId}
+  #${tenderId}=  izi quinta get tenderId by tenderUaId   ${tenderUaId}
   ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/tenders/sync/${tenderId}
   ${response}=  izi_service.get  ${url}
   ${statusCode}=	Get Variable Value  ${response.status_code}
   Run Keyword If  ${statusCode} != 200  Fail  неможливо виконати запит на ручну синхронізацію тендеру, статус ${statusCode}
   Log  tender ${tenderUaId} updated ${url}  WARN
+
+izi sync agreement
+  [Arguments]  ${agreementUaId}
+  ${agreementId}=  izi get agreementId by agreementUaId  ${agreementUaId}
+  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/agreements/sync/${agreementUaId}
+  ${response}=  izi_service.get  ${url}
+  ${statusCode}=	Get Variable Value  ${response.status_code}
+  Run Keyword If  ${statusCode} != 200  Fail  неможливо виконати запит на ручну синхронізацію угоди, статус ${statusCode}
+  Log  agreement ${agreementUaId} updated ${url}  WARN
+
+izi sync plan
+  [Arguments]  ${planUaId}
+  ${planId}=  izi get planId by planUaId  ${planUaId}
+  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/plans/sync/${planId}
+  ${response}=  izi_service.get  ${url}
+  ${statusCode}=	Get Variable Value  ${response.status_code}
+  Run Keyword If  ${statusCode} != 200  Fail  неможливо виконати запит на ручну синхронізацію плану, статус ${statusCode}
+  Log  plan ${planUaId} updated ${url}  WARN
 
 izi get page lots count
 	${lotsCount}=	Execute Javascript	return $('lot-tabs .lot-tabs__tab').length
@@ -90,21 +120,52 @@ izi get page lots count
 
 izi get tenderId by tenderUaId
   [Arguments]  ${tenderUaId}
-  Log  ${ROLE}
   ${tenderOwner}=  Run Keyword If  '${ROLE}' != 'tender_owner'  Set Variable  ${BROKERS.Quinta.roles.tender_owner}
   ...  ELSE  Set Variable  ${BROKERS['${BROKER}'].roles.tender_owner}
-  Run Keyword And Return  openprocurement_client.Отримати internal id по UAid  ${tenderOwner}  ${tenderUaId}
+  ${status}   ${tenderId}=  Run Keyword And Ignore Error   openprocurement_client.Отримати internal id по UAid  ${tenderOwner}  ${tenderUaId}
+  Run Keyword If  '${status}' == 'PASS'  Return From Keyword  ${tenderId}
+  ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
+  ${ARTIFACT}=  load_data_from  ${file_path}
+  Log   gues tenderId from artifact file => ${ARTIFACT.tender_id}  WARN
+  [Return]  ${ARTIFACT.tender_id}
+
+izi get planId by planUaId
+  [Arguments]  ${planUaId}
+  ${tenderOwner}=  Run Keyword If  '${ROLE}' != 'tender_owner'  Set Variable  ${BROKERS.Quinta.roles.tender_owner}
+  ...  ELSE  Set Variable  ${BROKERS['${BROKER}'].roles.tender_owner}
+  ${status}   ${planId}=  Run Keyword And Ignore Error   openprocurement_client.Отримати internal id плану по UAid  ${tenderOwner}  ${planUaId}
+  Run Keyword If  '${status}' == 'PASS'  Return From Keyword  ${planId}
+  ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact_plan.yaml
+  ${ARTIFACT}=  load_data_from  ${file_path}
+  Log   gues planId from artifact file => ${ARTIFACT.tender_id}  WARN
+  [Return]  ${ARTIFACT.tender_id}
+
+izi get agreementId by agreementUaId
+  [Arguments]  ${agreementUaId}
+  ${tenderOwner}=  Run Keyword If  '${ROLE}' != 'tender_owner'  Set Variable  ${BROKERS.Quinta.roles.tender_owner}
+  ...  ELSE  Set Variable  ${BROKERS['${BROKER}'].roles.tender_owner}
+  ${status}   ${agreementId}=  Run Keyword And Ignore Error   openprocurement_client.Отримати internal id угоди по UAid  ${tenderOwner}  ${agreementUaId}
+  Run Keyword If  '${status}' == 'PASS'  Return From Keyword  ${agreementId}
+  ${file_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
+  ${ARTIFACT}=  load_data_from  ${file_path}
+  Log   guest agreementId from artifact file => ${ARTIFACT.agreement_id}  WARN
+
+izi get tenderJson by tenderUaId
+  [Arguments]  ${tenderUaId}
+  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/tenders/${tenderUaId}
+  ${response}=  izi_service.get  ${url}
+  [Return]  ${response.data}
 
 izi convert izi date to prozorro date
   [Arguments]  ${dateFieldText}
   &{results}  Execute Javascript  return (()=>{let [dateString, day = "", month = "", year = "", time = ""] = "${dateFieldText}".match(/^\\D*(\\d{1,2})\\.(\\d{1,2})\\.(\\d{4})(?:\\s(\\d{1,2}:\\d{1,2}))?$/) || []; return {day, month, year, time}})()
   ${date}=  Convert To String  ${results.year}-${results.month}-${results.day} ${results.time}
-  ${result}=  izi_service.get_time_with_offset  ${date}
+  ${result}=  izi_service.convert_dtstring_to_isoformat  ${date}
   [Return]  ${result}
 
 izi convert izi number to prozorro number
   [Arguments]  ${numberTextField}
-  ${number}  Execute Javascript  return (()=> +(("${numberTextField}".match(/^\\D*(\\d*[\\s,\\d]*).*$/) || [])[1] || "").replace(/\\s/g,'').replace(/,/g, '.').replace('.00', '') || 0)()
+  ${number}  Execute Javascript  return (()=> +(("${numberTextField}".match(/^\\D*(\\d*[\\s,\\d\\.]*).*$/) || [])[1] || "").replace(/\\s/g,'').replace(/,/g, '.').replace('.00', '') || 0)()
   [Return]  ${number}
 
 izi find objectId element value
@@ -377,9 +438,9 @@ izi знайти на сторінці тендера поле value.currency
 
 izi знайти на сторінці тендера поле description предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=.items-info .items-info__row
-  ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__name span:last-child
+  ...  wrapperElSelector=items-info .items-info__row
+  ...  elThatHasObjectIdSelector=.items-info__name .items-info__name-desc
+  ...  elThatHasValueSelector=.items-info__name .items-info__name-desc
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле title нецінового показника ${feature_id}
@@ -407,12 +468,22 @@ izi знайти на сторінці тендера поле deliveryDate.star
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
+izi знайти на сторінці тендера поле items[${item_index}].deliveryDate.startDate
+  ${value}=   Execute Javascript    return $('.items-info .items-info__row:eq(${item_index}) .items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:first').text()
+  ${value}=  izi convert izi date to prozorro date  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле items[${item_index}].deliveryDate.endDate
+  ${value}=   Execute Javascript    return $('.items-info .items-info__row:eq(${item_index}) .items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last ').text()
+  ${value}=  izi convert izi date to prozorro date  ${value}
+  [Return]  ${value}
+
 izi знайти на сторінці тендера поле items[${item_index}].deliveryDate.endDate предмету ${item_id}
   ${value}=  izi find objectId element value
   ...  objectId=${item_id}
   ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:last
+  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last 
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -594,9 +665,9 @@ izi знайти на сторінці лоту ${index} поле value.valueAdd
 izi знайти на сторінці лоту ${index} поле description предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=.items-info .items-info__row
+  ...  wrapperElSelector=items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__name span:last-child
+  ...  elThatHasValueSelector=.items-info__name-desc
   [Return]  ${value}
 
 izi знайти на сторінці лоту ${index} поле deliveryDate.startDate предмету ${item_id}
@@ -605,7 +676,7 @@ izi знайти на сторінці лоту ${index} поле deliveryDate.s
   ...  objectId=${item_id}
   ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:first
+  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:first
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -616,7 +687,7 @@ izi знайти на сторінці лоту ${index} поле deliveryDate.e
   ...  objectId=${item_id}
   ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
-  ...  elThatHasValueSelector=.items-info__popup p:contains(Період доставки) span:last
+  ...  elThatHasValueSelector=.items-info__popup p:contains("Строк виконання робіт/надання послуг"), p:contains("Період доставки") span:last 
   ${value}=  izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -825,10 +896,12 @@ izi знайти на сторінці тендеру запитання ${quest
 izi знайти index лоту за lotObjectId
   [Arguments]  ${lotObjectId}
   ${lotsCount}=  izi get page lots count
+  ${lotIndex}=    set variable    ${EMPTY}
   :FOR  ${index}  IN RANGE  ${lotsCount}
+  \   ${lotIndex}=  set variable  ${index}
   \  ${title}=  Run Keyword  izi знайти на сторінці лоту ${index} поле title
   \  Exit For Loop If  "${lotObjectId}" in "${title}"
-  [Return]  ${index}
+  [Return]  ${lotIndex}
 
 izi знайти на сторінці тендера поле title документу ${doc_id}
   ${value}=  izi find objectId element value  objectId=${doc_id}
@@ -1177,8 +1250,10 @@ izi знайти на сторінці тендера поле procurementMethod
 
 izi подати цінову пропозицію на тендер
   [Arguments]  ${bid}  ${lotIndex}=${None}
-  Run Keyword If  '${lotIndex}' != '${None}'  izi обрати лот ${lotIndex}
+  Log   ${bid}  WARN
   ${type}=  izi знайти на сторінці тендера поле procurementMethodType
+  Run Keyword And Return If  '${type}' == 'esco'  izi подати цінову пропозицію на esco тендер  ${bid}  ${lotIndex}
+  Run Keyword If  '${lotIndex}' != '${None}'  izi обрати лот ${lotIndex}
   izi bid-submit-form open form
   Run Keyword If  '${type}' != 'competitiveDialogueUA' and '${type}' != 'competitiveDialogueEU'
   ...  izi bid-submit-form fill valueAmount  valueAmount=${bid.data.value.amount}
@@ -1187,6 +1262,31 @@ izi подати цінову пропозицію на тендер
   ...  izi bid-submit-form check selfEligible
   ...  izi bid-submit-form check selfQualified
   izi bid-submit-form add document  docType=3
+  izi bid-submit-form submit form
+  izi bid-submit-form close submit-form by clicking X
+
+izi подати цінову пропозицію на esco тендер
+  [Arguments]  ${bid}  ${lotIndex}=${None}
+  Run Keyword If  '${lotIndex}' != '${None}'  izi обрати лот ${lotIndex}
+  izi bid-submit-form open form
+  #fill contract duration years
+  Execute Javascript  $('esco-bid-submit .esco-value__contract-duration-years-select .izi-select__select li[key=${bid.data.value.contractDuration.years}]').click()
+  #fill contract duration days
+  Execute Javascript  $('esco-bid-submit .esco-value__contract-duration-days-input').val(${bid.data.value.contractDuration.days})[0].dispatchEvent(new Event('input'))
+  #fill yearlyPaymentsPercentage
+  Execute Javascript  $('esco-bid-submit .esco-value__yearly-payments-percentage-input').val((+'${bid.data.value.yearlyPaymentsPercentage}' * 100).toFixed(3))[0].dispatchEvent(new Event('input'))
+  Sleep  1s
+  #fill annualCostsReduction
+  ${periodsLength}=  Get Length  ${bid.data.value.annualCostsReduction}
+  :FOR  ${index}  IN RANGE  0  ${periodsLength}
+  \   ${periodExists}=  Execute Javascript  return !!$('esco-bid-submit .esco-value__acr-periods .esco-value__acr-periods-col:eq(1) .esco-value__acr-periods-cell:eq(' + (+'${index}' + 1) + ') input').length
+  \   Continue For Loop If  '${periodExists}' == 'False'
+  \   Execute Javascript    $('esco-bid-submit .esco-value__acr-periods .esco-value__acr-periods-col:eq(1) .esco-value__acr-periods-cell:eq(' + (+'${index}' + 1) + ') input').val(${bid.data.value.annualCostsReduction[${index}]})[0].dispatchEvent(new Event('input'))
+  izi bid-submit-form fill features   parameters=${bid.data.parameters}
+  izi bid-submit-form check selfEligible
+  izi bid-submit-form check selfQualified
+  izi bid-submit-form add document  docType=3
+  Sleep   1s
   izi bid-submit-form submit form
   izi bid-submit-form close submit-form by clicking X
 
@@ -1272,9 +1372,10 @@ izi bid-submit-form change document
   Run Keyword And Return If  '${docId}' == '${None}'  Fail
   Set To Dictionary  ${IZI_TMP_DICT}  ${docObjectId}=${docId}
   ${title}=  izi document-manage get document title  docId=${docId}  documentManageSelector=${documentManageSelector}
-  ${url}=  izi document-manage get document url  docId=${docId}  documentManageSelector=${documentManageSelector}
-  ${filePath}=  Set Variable  ${OUTPUT_DIR}${/}${title}
-  ${filename}=  download_file_from_url  ${url}  ${filePath}
+  #${url}=  izi document-manage get document url  docId=${docId}  documentManageSelector=${documentManageSelector}
+  #${filePath}=  Set Variable  ${OUTPUT_DIR}${/}${title}
+  #${filename}=  download_file_from_url  ${url}  ${filePath}
+  ${filePath}  ${fileName}  ${fileContent}  create_fake_doc
   Run Keyword And Return  izi document-manage add document new version
   ...  documentManageSelector=${documentManageSelector}
   ...  filePath=${filePath}
@@ -1283,7 +1384,6 @@ izi bid-submit-form change document
   ...  confidentialityText=${confidentialityText}
   ...  isDescriptionDecision=${isDescriptionDecision}
   ...  docId=${docId}
-
 
 izi document-manage get document url
   [Arguments]  ${docId}  ${documentManageSelector}
@@ -1337,6 +1437,7 @@ izi document-manage add document
   Wait Until Page Contains Element  jquery=${documentManageSelector} documents-view .documents-view__row:eq(${currDocsLength})
 
 izi bid-submit-form submit form
+  capture page screenshot
   ${canSubmit}=  Execute Javascript  return !!$('.bid-submit .bid-submit__control button:not(button[disabled])').length
   Run Keyword And Return If  '${canSubmit}' == 'False'  Fail
   Click Element  jquery=.bid-submit .bid-submit__bid-submit-btn
@@ -1407,6 +1508,11 @@ izi знайти на сторінці тендера поле пропозиц�
   ${value}=  Execute Javascript  return $('bid-status[przBidStatus]').attr('przBidStatus')
   [Return]  ${value}
 
+izi змінити на сторінці тендера поле пропозиції status на None
+  izi bid-submit-form open form
+  izi bid-submit-form submit form
+  izi bid-submit-form close submit-form by clicking X
+
 izi змінити на сторінці тендера поле пропозиції status на pending
   izi bid-submit-form open form
   izi bid-submit-form submit form
@@ -1449,7 +1555,7 @@ izi змінити документ в пропозиції лота
 izi змінити документ в пропозиції тендера
   [Arguments]  ${docObjectId}  ${docData}
   izi bid-submit-form open form
-  Log  ${docData}
+  Log  ${docData}  WARN
   ${confidentialityText}=  Get Variable Value  ${docData.data.confidentialityRationale}  ${None}
   ${docType}=  Set Variable  ${None}  #this test must receive this values :(
   ${isDescriptionDecision}=  Set Variable  ${None}  #this test must receive this values :(
@@ -1610,7 +1716,7 @@ izi get countryName from iziAddressField
 
 izi get countryName from iziAddressString
   [Arguments]  ${addressString}
-  ${value}=  Execute Javascript  return "${addressString}".split(', ')[1].trim().split(' ')[0]
+  ${value}=  Execute Javascript  return "${addressString}".split(', ')[1].match(/(^[^\\(]*)\\(?.*/)[1].trim()
   [Return]  ${value}
 
 izi get countryName_ru from iziAddressField
@@ -1808,7 +1914,7 @@ izi знайти на сторінці тендера поле features[${index}
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле contracts[${index}].dateSigned
-  ${value}=   Execute Javascript  return $('contract-info:eq(${index}) .contract-info__date-signed').attr('przDateSigned')
+  ${value}=   Execute Javascript  return $('contract-info:eq(${index}) .contract-info__date-signed').attr('przDateSigned') || $('contract-info:eq(0) .contract-info__date-signed').attr('przDateSigned')
   ${value}=   izi convert izi date to prozorro date  ${value}
   [Return]  ${value}
 
@@ -1839,29 +1945,208 @@ izi знайти на сторінці тендера поле agreements[${inde
   ${value}=   Execute Javascript  return $('.agreement-info:eq(${index}) .contract-info__topic span:first').text().split(" ").pop() || $('.agreement-info:eq(0) .contract-info__topic span:first').text().split(" ").pop()
   [Return]  ${value}
 
+izi чи я на сторінці угоди ${agreement_uaid}
+  ${currentPageAgreementCode}=  Execute Javascript  return $('agreement-page[agreementCode]').attr('agreementCode')
+  Return From Keyword If  '${currentPageAgreementCode}' == '${agreement_uaid}'  TRUE
+  Return From Keyword  FALSE
+
 izi перейти на сторінку угоди
-  [Arguments]  ${agreement_id}
-  Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_id}
+  [Arguments]  ${agreement_uaid}
+  izi sync agreement  ${agreement_uaid} 
+  ${isAmOnPage}=  izi чи я на сторінці угоди ${agreement_uaid}
+  Run Keyword If   '${isAmOnPage}' == 'FALSE'   Run Keywords
+  ...   Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_uaid}
+  ...   AND   Wait Until Page Contains Element  css=agreement-page  15
+  ...   Sleep  500ms
+  Sleep  2s
+  ${factDateModified}=  izi get agreement dateModified   ${agreement_uaid}
+  ${factDateModified}=  Fetch From Left  ${factDateModified}  .
+  ${pageDateModified}=  Execute Javascript  return $('agreement-page[datemodified]').attr('datemodified')
+  ${pageDateModified}=  Fetch From Left  ${pageDateModified}  .
+  Log  agreement modified date="${factDateModified}"  WARN
+  Log  page agreement modified date="${pageDateModified}"  WARN
+  Return From Keyword If  '${factDateModified}' == '${pageDateModified}'
+  Log  agreement was modified, reloading page....  WARN
+  Reload Page
   Wait Until Page Contains Element  css=agreement-page  15
   Sleep  500ms
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationaleType
-  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $("p").has("strong:contains(Обґрунтування змін згідно закону)").eq(${changeIndex}).text().split(":").pop().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationale
-  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $("p").has("strong:contains(Опис причин внесення змін)").eq(${changeIndex}).text().split(":").pop().trim()
   [Return]  ${value}
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].status
-  Wait Until Page Contains Element  css=agreement-page  15
   ${value}=   Execute Javascript  return $(".contract-page__status").has("strong:contains(Статус додаткової угоди)").eq(${changeIndex}).find(".contract-page__status-item").text().split(":").pop().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
+izi знайти на сторінці тендера поле minimalStepPercentage
+  ${attribute}=  Set Variable  przMinimalStepPercentage
+  ${value}=   Execute Javascript  return +$('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
 
+izi знайти на сторінці лоту ${lotIndex} поле minimalStepPercentage
+  Run keyword and return  izi знайти на сторінці тендера поле lots[${lotIndex}].minimalStepPercentage
 
+izi знайти на сторінці тендера поле lots[${lotIndex}].minimalStepPercentage
+  izi обрати лот ${lotIndex}
+  ${attribute}=  Set Variable  przMinimalStepPercentage
+  ${value}=   Execute Javascript  return +$('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
 
+izi знайти на сторінці тендера поле NBUdiscountRate
+  ${attribute}=  Set Variable  przNbuDiscountRate
+  ${value}=   Execute Javascript  return +$('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле fundingKind
+  ${attribute}=  Set Variable  przFundingKind
+  ${value}=   Execute Javascript  return $('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi знайти на сторінці лоту ${lotIndex} поле fundingKind
+  izi обрати лот ${lotIndex}
+  ${attribute}=  Set Variable  przFundingKind
+  ${value}=   Execute Javascript  return $('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле yearlyPaymentsPercentageRange
+  ${attribute}=  Set Variable  przYearlyPaymentsPercentageRange
+  ${value}=   Execute Javascript  return +$('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi знайти на сторінці лоту ${lotIndex} поле yearlyPaymentsPercentageRange
+  Run keyword and return  izi знайти на сторінці тендера поле lots[${lotIndex}].yearlyPaymentsPercentageRange
+
+izi знайти на сторінці тендера поле lots[${lotIndex}].yearlyPaymentsPercentageRange
+  izi обрати лот ${lotIndex}
+  ${attribute}=  Set Variable  przYearlyPaymentsPercentageRange
+  ${value}=   Execute Javascript  return +$('tender-lot-info notes li[${attribute}]').attr('${attribute}')
+  [Return]  ${value}
+
+izi перейти на сторінку плану
+  [Arguments]  ${planUaId}
+  izi sync plan  ${planUaId}
+  ${isAmOnPage}=  izi чи я на сторінці плану ${planUaId}
+  Run Keyword If  '${isAmOnPage}' == 'FALSE'  izi знайти план та перейти на сторінку  ${planUaId}
+  Sleep  2s
+
+izi чи я на сторінці плану ${planUaId}
+  ${currentPlanCode}=  Execute Javascript  return $('plan-page[planCode]').attr('planCode')
+  Return From Keyword If  '${currentPlanCode}' == '${planUaId}'  TRUE
+  Return From Keyword  FALSE
+  
+izi перейти на сторінку пошуку плану
+  [Arguments]  ${searchText}
+  Go to  ${BROKERS['izi'].homepage}/plans?searchText=${searchText}
+  Wait Until Page Contains Element  css=search-results  15
+  Sleep  500ms
+
+izi знайти план та перейти на сторінку
+  [Arguments]  ${planUaId}
+  izi перейти на сторінку пошуку плану  searchText=${planUaId}
+  Sleep	  1s
+  Click Element  css=search-results plan-info:first-child .tender-info__footer a
+  Wait Until Page Contains Element  css=plan-page  15
+  Sleep   2s
+
+izi знайти на сторінці тендера поле auctionPeriod.startDate
+  ${value}=   Execute Javascript    return $('.tender-lot-status__auction-status').attr('auctionStartDate')
+  ${value}=  izi convert izi date to prozorro date  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці лоту ${lotIndex} поле auctionPeriod.startDate
+  izi обрати лот ${lotIndex}
+  Run Keyword And Return    izi знайти на сторінці тендера поле auctionPeriod.startDate
+
+izi знайти на сторінці тендера поле lots[${lotIndex}].auctionPeriod.startDate
+  Run Keyword And Return    izi знайти на сторінці лоту ${lotIndex} поле auctionPeriod.startDate
+
+izi знайти на сторінці плану поле tender.procurementMethodType
+  ${value}=  Execute Javascript		return $('.notes:not(.mobile) ul li strong:contains(Тип процедури:)+span').text().trim()
+	${value}=	izi_service.get_prozorro_pmtype_by_izi_pmtext	${value}
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле budget.amount
+  ${value}=  Execute Javascript  return $(".tender-details__price-val").first().text().trim()
+  ${value}=  izi convert izi number to prozorro number  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле budget.description
+  ${value}=  Execute Javascript  return $('.contract-page__preface:first').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле budget.currency
+  ${value}=  Execute Javascript  return $(".tender-details__price-curr").text().trim()
+  ${value}=  get_prozorro_curr_by_izi_curr  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле procuringEntity.name
+  Log  TODO  WARN
+  ${value}=  Execute Javascript  return $('.tender-details .tender-details__info p:has(strong:contains(Замовник:))+p').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле procuringEntity.identifier.scheme
+  ${value}=  Execute Javascript  return $('.tender-details .tender-details__more-info dl:has(strong:contains(Схема Ідентифікації:)) dd').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле procuringEntity.identifier.id
+  ${value}=  Execute Javascript  return $('.tender-details .tender-details__more-info dl:has(dt:contains(Код ЄДРПОУ:)) dd').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле procuringEntity.identifier.legalName
+  ${value}=  Execute Javascript  return $('.tender-details .tender-details__info p:has(strong:contains(Замовник:))+p').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле classification.description
+  Log  TODO  WARN
+  ${value}=  Execute Javascript  return $('.notes ul li strong:contains(Код ДК021):first+span').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле classification.scheme
+  Log  TODO  WARN
+  ${value}=  Execute Javascript  return $('.notes ul li strong:contains(Код ДК021):first').text().trim().slice(3, -1).trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле classification.id
+  ${value}=  Execute Javascript   return null
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].description
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__name .items-info__name-desc').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].quantity
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__number .items-info__uqnt').text().trim()
+  ${value}=  izi convert izi number to prozorro number  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].deliveryDate.endDate
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__popup p:contains(Період доставки: до) span').text().trim()
+  ${value}=  izi convert izi date to prozorro date  ${value}
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].unit.code
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__number .items-info__uname').attr('przItemUnitCode').trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].unit.name
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__number .items-info__uname').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].classification.description
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__popup .items-info__classification:first .items-info__classification-descr').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].classification.scheme
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__popup .items-info__classification:first .items-info__classification-scheme').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці плану поле items[${item_index}].classification.id
+  ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__popup .items-info__classification:first .items-info__classification-id').text().trim()
+  [Return]  ${value}

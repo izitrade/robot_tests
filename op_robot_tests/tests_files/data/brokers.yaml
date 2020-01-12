@@ -50,7 +50,7 @@ Default:
              tender:  [0, 10]
         open_framework:
              accelerator: 1600
-             tender:  [0, 10]
+             tender:  [0, 30]
         framework_selection:
              accelerator: 360
     # Synchronization delay, in seconds
@@ -58,24 +58,24 @@ Default:
 Quinta:
     intervals:
         default:
-            enquiry: [0, 2]
-            tender:  [0, 15]
+            enquiry: [0, 20]
+            tender:  [0, 20]
         openua:
-            tender:  [1, 15]
+            tender:  [1, 30]
         openeu:
-            tender:  [1, 15]
+            tender:  [1, 35]
         openua_defense:
-            tender:  [0, 15]
+            tender:  [0, 20]
         open_competitive_dialogue:
             accelerator: 1440
-            tender:  [0, 15]
+            tender:  [0, 30]
         open_esco:
              accelerator: 1600
-             enquiry: [0, 1]
-             tender:  [0, 15]
+             enquiry: [0, 15]
+             tender:  [0, 30]
         open_framework:
              accelerator: 1600
-             tender:  [0, 15]
+             tender:  [0, 30]
         framework_selection:
              accelerator: 360
     keywords_file: openprocurement_client
@@ -261,14 +261,34 @@ PrivatMarket:
 Prom:
     intervals:
         default:
+            accelerator: 1440
             enquiry: [4, 4]
             tender:  [0,  30]
+        abovethresholdeu:
+            accelerator: 1440
+            tender:  [0, 50]
+        openeu:
+            accelerator: 1440
+            tender:  [0, 50]
+        openua:
+            accelerator: 1440
+            tender:  [0, 65]
+        belowThreshold:
+            accelerator: 1440
+            enquiry: [0, 75]
+            tender:  [0, 65]
+        negotiation:
+            accelerator: 360
+            enquiry: [0, 20]
+            tender:  [0, 20]
+        openua_defense:
+            tender:  [0, 110]
     keywords_file: prom
     roles:
         tender_owner:   Prom_Owner
         viewer:         Prom_Viewer
-        provider:       Prom_Provider1
-    timeout_on_wait: 10
+        provider:       Prom_Provider
+    timeout_on_wait: 300
 Publicbid:
     intervals:
         default:
@@ -303,6 +323,7 @@ SmartTender:
             enquiry: [0, 10]
             tender:  [0, 30]
         belowThreshold:
+            accelerator: 1440
             enquiry: [0, 25]
             tender:  [0, 20]
         openua:
@@ -311,8 +332,14 @@ SmartTender:
         openeu:
             tender:  [30, 70]
             accelerator: 1440
+        open_esco:
+            tender: [0, 50]
+            accelerator: 1440
         framework_selection:
             accelerator: 360
+        open_framework:
+            tender:  [0, 50]
+            accelerator: 1440
     keywords_file: smarttender
     roles:
         provider:       SmartTender_Provider1
@@ -513,29 +540,30 @@ izi:
     backendUrl: "https://api-test.izi.trade"
     intervals:
         default:
-            enquiry: [0, 2]
+            enquiry: [0, 20]
             tender:  [0, 10]
-            accelerator: 1600
+            accelerator: 1440
         belowThreshold:
-            enquiry: [0, 2]
-            tender:  [0, 15]
+            enquiry: [0, 6]
+            tender:  [0, 6]
             accelerator: 300
         openua:
             tender:  [0, 15]
-            accelerator: 1600
+            accelerator: 1440
         openeu:
-            tender:  [0, 15]
-            accelerator: 1600
+            tender:  [0, 35]
+            accelerator: 1440
         openua_defense:
-            tender:  [0, 15]
-            accelerator: 1600
+            tender:  [0, 20]
+            accelerator: 1440
         open_competitive_dialogue:
-            tender:  [0, 15]
-            accelerator: 1600
+            tender:  [0, 35]
+            accelerator: 1440
     keywords_file: izi
     roles:
         provider:       izi_provider
         provider1:      izi_provider1
+        provider2:      izi_provider2
         viewer:         izi_viewer
     timeout_on_wait: 5
 ukrtender:
