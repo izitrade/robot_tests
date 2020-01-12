@@ -99,7 +99,7 @@ izi update tender
 izi sync agreement
   [Arguments]  ${agreementUaId}
   ${agreementId}=  izi get agreementId by agreementUaId  ${agreementUaId}
-  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/agreements/sync/${agreementUaId}
+  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/agreements/sync/${agreementId}
   ${response}=  izi_service.get  ${url}
   ${statusCode}=	Get Variable Value  ${response.status_code}
   Run Keyword If  ${statusCode} != 200  Fail  неможливо виконати запит на ручну синхронізацію угоди, статус ${statusCode}
