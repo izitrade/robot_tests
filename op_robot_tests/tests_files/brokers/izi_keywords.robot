@@ -1971,16 +1971,16 @@ izi перейти на сторінку угоди
   Sleep  500ms
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationaleType
-  ${value}=   Execute Javascript  return $("p").has("strong:contains(Обґрунтування змін згідно закону)").eq(${changeIndex}+4).text().split(":").pop().trim()
+  ${value}=   Execute Javascript  return $("p").has("strong:contains(Обґрунтування змін згідно закону)").eq(${changeIndex}).text().split(":").pop().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].rationale
-  ${value}=   Execute Javascript  return $("p").has("strong:contains(Опис причин внесення змін)").eq(${changeIndex}+4).text().split(":").pop().trim()
+  ${value}=   Execute Javascript  return $("p").has("strong:contains(Опис причин внесення змін)").eq(${changeIndex}).text().split(":").pop().trim()
   [Return]  ${value}
 
 izi знайти на сторінці угоди поле changes[${changeIndex}].status
-  ${value}=   Execute Javascript  return $(".contract-page__status").has("strong:contains(Статус додаткової угоди)").eq(${changeIndex}+4).find(".contract-page__status-item").text().split(":").pop().trim()
+  ${value}=   Execute Javascript  return $(".contract-page__status").has("strong:contains(Статус додаткової угоди)").eq(${changeIndex}).find(".contract-page__status-item").text().split(":").pop().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
