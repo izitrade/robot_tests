@@ -438,7 +438,7 @@ izi знайти на сторінці тендера поле value.currency
 
 izi знайти на сторінці тендера поле description предмету ${item_id}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name .items-info__name-desc
   ...  elThatHasValueSelector=.items-info__name .items-info__name-desc
   [Return]  ${value}
@@ -665,7 +665,7 @@ izi знайти на сторінці лоту ${index} поле value.valueAdd
 izi знайти на сторінці лоту ${index} поле description предмету ${item_id}
   izi обрати лот ${index}
   ${value}=  izi find objectId element value  objectId=${item_id}
-  ...  wrapperElSelector=items-info .items-info__row
+  ...  wrapperElSelector=.items-info .items-info__row
   ...  elThatHasObjectIdSelector=.items-info__name
   ...  elThatHasValueSelector=.items-info__name-desc
   [Return]  ${value}
