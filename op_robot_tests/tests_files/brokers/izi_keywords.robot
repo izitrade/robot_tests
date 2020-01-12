@@ -1957,7 +1957,6 @@ izi перейти на сторінку угоди
   Run Keyword If   '${isAmOnPage}' == 'FALSE'   Run Keywords
   ...   Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_uaid}
   ...   AND   Wait Until Page Contains Element  css=agreement-page  15
-  ...   Sleep  500ms
   Sleep  2s
   ${factDateModified}=  izi get agreement dateModified   ${agreement_uaid}
   ${factDateModified}=  Fetch From Left  ${factDateModified}  .
