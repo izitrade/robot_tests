@@ -1258,10 +1258,11 @@ izi подати цінову пропозицію на тендер
   Run Keyword If  '${type}' != 'competitiveDialogueUA' and '${type}' != 'competitiveDialogueEU'
   ...  izi bid-submit-form fill valueAmount  valueAmount=${bid.data.value.amount}
   izi bid-submit-form fill features  parameters=${bid.data.parameters}
-  Run Keyword If  '${type}' != 'belowThreshold'  Run Keywords
+  Run Keyword If  '${type}' != 'belowThreshold' and '${type}' != 'closeFrameworkAgreementSelectionUA'  Run Keywords
   ...  izi bid-submit-form check selfEligible
   ...  izi bid-submit-form check selfQualified
-  izi bid-submit-form add document  docType=3
+  Run Keyword If  '${type}' != 'closeFrameworkAgreementSelectionUA'
+  ...  izi bid-submit-form add document  docType=3
   izi bid-submit-form submit form
   izi bid-submit-form close submit-form by clicking X
 
@@ -1303,7 +1304,7 @@ izi bid-submit-form close submit-form by clicking X
 
 izi bid-submit-form fill valueAmount
   [Arguments]  ${valueAmount}
-  Input Text  jquery=.bid-submit value-submit input  '${valueAmount}'
+  Input Text  jquery=.bid-submit .value-submit input  '${valueAmount}'
 
 izi bid-submit-form fill features
   [Arguments]  ${parameters}
@@ -1459,7 +1460,7 @@ izi bid-submit-form cancel bid
   Click Element  jquery=${dialogOkBtnSelector}
 
 izi bid-submit-form get valueAmount
-  ${value}=  Get Value  jquery=.bid-submit value-submit input
+  ${value}=  Get Value  jquery=.bid-submit .value-submit input
   ${value}=  Convert To Number  ${value}
   [Return]  ${value}
 
@@ -2148,4 +2149,20 @@ izi знайти на сторінці плану поле items[${item_index}].
 
 izi знайти на сторінці плану поле items[${item_index}].classification.id
   ${value}=  Execute Javascript  return $('.items-info__row:eq(${item_index}) .items-info__popup .items-info__classification:first .items-info__classification-id').text().trim()
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле items[${item_index}].classification.scheme
+  ${value}=  izi знайти на сторінці тендера поле classification.scheme предмету ${item_index}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле items[${item_index}].quantity
+  ${value}=  izi знайти на сторінці тендера поле quantity предмету ${item_index}
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле lots[${lot_index}].value.amount
+  ${value}=  izi знайти на сторінці лоту ${lot_index} поле value.amount
+  [Return]  ${value}
+
+izi знайти на сторінці тендера поле lots[${lot_index}].minimalStep.amount
+  ${value}=  izi знайти на сторінці лоту ${lot_index} поле minimalStep.amount
   [Return]  ${value}
