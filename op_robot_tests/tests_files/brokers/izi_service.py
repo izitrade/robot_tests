@@ -112,7 +112,8 @@ def get_prozorro_pmtype_by_izi_pmtext(pmtext):
         u"Конкурентний діалог з публікацією на англійській мові, етап #2": u"competitiveDialogueEU.stage2",
         u"Звіт про укладений договір": u"reporting",
         u"Еско процедура": u"esco",
-        u"Укладання рамкової угоди": u"closeFrameworkAgreementUA"
+        u"Укладання рамкової угоди": u"closeFrameworkAgreementUA",
+        u"Відбір для закупівлі за рамковою угодою": u"closeFrameworkAgreementSelectionUA"
     }.get(pmtext)
 
 
