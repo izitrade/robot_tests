@@ -536,8 +536,8 @@ aladdin:
         viewer:         aladdin_Viewer
     timeout_on_wait: 1
 izi:
-    homepage: "https://prozorro:EUKAJxV5nZhVRKAL@test.izi.trade"
-    backendUrl: "https://api-test.izi.trade"
+    homepage: "https://prozorro:EUKAJxV5nZhVRKAL@uat.izi.trade"
+    backendUrl: "https://api-uat.izi.trade"
     intervals:
         default:
             enquiry: [0, 20]
