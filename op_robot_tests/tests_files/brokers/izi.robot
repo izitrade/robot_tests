@@ -37,8 +37,7 @@ Login
 
 Оновити сторінку з тендером
   [Arguments]  ${username}  ${tender_uaid}
-  ${isAmOnPage}=  izi чи я на сторінці тендеру ${tender_uaid}
-  run keyword and return if  '${isAmOnPage}' == 'FALSE'  izi перейти на сторінку тендеру  ${tender_uaid}
+  izi перейти на сторінку тендеру  ${tender_uaid}
   Reload Page
   Wait Until Page Contains Element  css=tender  15
   Sleep  500ms
@@ -343,9 +342,10 @@ Login
 
 Оновити сторінку з планом
   [Arguments]  ${username}  ${planUaId}
-  ${isAmOnPage}=  izi чи я на сторінці плану ${planUaId}
-  Run Keyword If  '${isAmOnPage}' == 'FALSE'  Reload Page
-  ...  ELSE  izi перейти на сторінку плану  ${planUaId}
+  izi перейти на сторінку плану  ${planUaId}
+  Reload Page
+  Wait Until Page Contains Element  css=plan-page  15
+  Sleep  500ms
 
 Пошук плану по ідентифікатору
   [Arguments]  ${username}  ${planUaId}
