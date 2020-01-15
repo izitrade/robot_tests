@@ -319,14 +319,14 @@ Login
 Отримати посилання на аукціон для учасника
   [Arguments]  ${username}  ${tender_uaid}  ${lotObjectId}=${None}
   izi перейти на сторінку тендеру  ${tender_uaid}
-  Run Keyword And Return If  '${lotObjectId}' == '${None}'  izi знайти на сторінці тендера посилання на аукціон
+  Run Keyword And Return If  '${lotObjectId}' == '${None}' or '${lotObjectId}' == ''  izi знайти на сторінці тендера посилання на аукціон
   ${lotIndex}=  izi знайти index лоту за lotObjectId  ${lotObjectId}
   Run Keyword And Return  izi знайти на сторінці лоту ${lotIndex} посилання на аукціон
 
 Отримати посилання на аукціон для глядача
   [Arguments]  ${username}  ${tender_uaid}  ${lotObjectId}=${None}
   izi перейти на сторінку тендеру  ${tender_uaid}
-  Run Keyword And Return If  '${lotObjectId}' == '${None}'  izi знайти на сторінці тендера посилання на аукціон
+  Run Keyword And Return If  '${lotObjectId}' == '${None}' or '${lotObjectId}' == ''  izi знайти на сторінці тендера посилання на аукціон
   ${lotIndex}=  izi знайти index лоту за lotObjectId  ${lotObjectId}
   Run Keyword And Return  izi знайти на сторінці лоту ${lotIndex} посилання на аукціон
 
