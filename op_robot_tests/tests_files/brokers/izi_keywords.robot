@@ -85,10 +85,7 @@ izi checkbox check change
 
 izi update tender
   [Arguments]  ${tenderUaId}
-  #${tenderJson}=  izi get tenderJson by tenderUaId    ${tenderUaId}
-  #${tenderId}=  Set Variable  ${tenderJson.originId}
   ${tenderId}=  izi get tenderId by tenderUaId  ${tenderUaId}
-  #${tenderId}=  izi quinta get tenderId by tenderUaId   ${tenderUaId}
   ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/tenders/sync/${tenderId}
   ${response}=  izi_service.get  ${url}
   ${statusCode}=	Get Variable Value  ${response.status_code}
@@ -606,7 +603,6 @@ izi знайти на сторінці тендера поле unit.name пре�
   ...  elThatHasValueSelector=.items-info__number span:eq(1)
   [Return]  ${value}
 
-#not required by prozorro
 izi знайти на сторінці тендера поле unit.code предмету ${item_id}
   ${attribute}=  Set Variable  przItemUnitCode
   ${value}=  izi find objectId element attribute  attribute=${attribute}  objectId=${item_id}
@@ -1268,14 +1264,10 @@ izi подати цінову пропозицію на esco тендер
   [Arguments]  ${bid}  ${lotIndex}=${None}
   Run Keyword If  '${lotIndex}' != '${None}'  izi обрати лот ${lotIndex}
   izi bid-submit-form open form
-  #fill contract duration years
   Execute Javascript  $('esco-bid-submit .esco-value__contract-duration-years-select .izi-select__select li[key=${bid.data.value.contractDuration.years}]').click()
-  #fill contract duration days
   Execute Javascript  $('esco-bid-submit .esco-value__contract-duration-days-input').val(${bid.data.value.contractDuration.days})[0].dispatchEvent(new Event('input'))
-  #fill yearlyPaymentsPercentage
   Execute Javascript  $('esco-bid-submit .esco-value__yearly-payments-percentage-input').val((+'${bid.data.value.yearlyPaymentsPercentage}' * 100).toFixed(3))[0].dispatchEvent(new Event('input'))
   Sleep  1s
-  #fill annualCostsReduction
   ${periodsLength}=  Get Length  ${bid.data.value.annualCostsReduction}
   :FOR  ${index}  IN RANGE  0  ${periodsLength}
   \   ${periodExists}=  Execute Javascript  return !!$('esco-bid-submit .esco-value__acr-periods .esco-value__acr-periods-col:eq(1) .esco-value__acr-periods-cell:eq(' + (+'${index}' + 1) + ') input').length
@@ -1371,9 +1363,6 @@ izi bid-submit-form change document
   Run Keyword And Return If  '${docId}' == '${None}'  Fail
   Set To Dictionary  ${IZI_TMP_DICT}  ${docObjectId}=${docId}
   ${title}=  izi document-manage get document title  docId=${docId}  documentManageSelector=${documentManageSelector}
-  #${url}=  izi document-manage get document url  docId=${docId}  documentManageSelector=${documentManageSelector}
-  #${filePath}=  Set Variable  ${OUTPUT_DIR}${/}${title}
-  #${filename}=  download_file_from_url  ${url}  ${filePath}
   ${filePath}  ${fileName}  ${fileContent}  create_fake_doc
   Run Keyword And Return  izi document-manage add document new version
   ...  documentManageSelector=${documentManageSelector}
@@ -1556,9 +1545,9 @@ izi змінити документ в пропозиції тендера
   izi bid-submit-form open form
   Log  ${docData}  WARN
   ${confidentialityText}=  Get Variable Value  ${docData.data.confidentialityRationale}  ${None}
-  ${docType}=  Set Variable  ${None}  #this test must receive this values :(
-  ${isDescriptionDecision}=  Set Variable  ${None}  #this test must receive this values :(
-  ${language}=  Set Variable  ${None}  #this test must receive this values :(
+  ${docType}=  Set Variable  ${None}
+  ${isDescriptionDecision}=  Set Variable  ${None}
+  ${language}=  Set Variable  ${None}
   izi bid-submit-form change document
   ...  docObjectId=${docObjectId}
   ...  confidentialityText=${confidentialityText}
@@ -1936,7 +1925,7 @@ izi знайти на сторінці тендера поле agreementDuration
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле agreements[${index}].status
-  ${value}=   Execute Javascript  return $('.contract-info__status').text().trim()  #this is costyl witno no Index use, but it should work || $('.agreement-info:eq(${index}) .contract-info__status').text().trim()
+  ${value}=   Execute Javascript  return $('.contract-info__status').text().trim()
   ${value}=  izi_service.convert_izi_string_to_prozorro_string  ${value}
   [Return]  ${value}
 
