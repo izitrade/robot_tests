@@ -31,7 +31,7 @@ Login
   Run Keyword If  '${username}' != 'izi_viewer'  Login  ${username}
 
 Пошук тендера по ідентифікатору
-  [Arguments]  ${username}  ${tender_uaid}  ${hz_ho_eto}=${Empty}
+  [Arguments]  ${username}  ${tender_uaid}  ${unknown_arg}=${Empty}
   [Documentation]
   izi перейти на сторінку тендеру  ${tender_uaid}
 
@@ -331,7 +331,7 @@ Login
   Run Keyword And Return  izi знайти на сторінці лоту ${lotIndex} посилання на аукціон
 
 Пошук угоди по ідентифікатору
-  [Arguments]  ${username}  ${agreement_uaid}  ${hz_ho_eto}=${Empty}
+  [Arguments]  ${username}  ${agreement_uaid}  ${unknown_arg}=${Empty}
   [Documentation]
   izi перейти на сторінку угоди  ${agreement_uaid}
 
