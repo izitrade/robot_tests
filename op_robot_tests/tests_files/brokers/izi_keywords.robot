@@ -2,7 +2,6 @@
 Library  Selenium2Library
 Library  izi_service.py
 Library  String
-Resource  openprocurement_client.robot
 
 *** Keywords ***
 izi get awardId by awardIndex
