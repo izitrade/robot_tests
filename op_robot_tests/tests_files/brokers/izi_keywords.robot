@@ -98,11 +98,16 @@ izi sync tender
   ${response}=  izi_service.post  ${url}
   ${statusCode}=  Get Variable Value  ${response.status_code}
   Log  Run sync tender ${tenderUaId}  DEBUG
-  Run Keyword And Return If  ${statusCode} < 300  Sleep  1s
+  Run Keyword And Return If  ${statusCode} < 300  Sleep  2s
   Run Keyword And Return If  ${statusCode} != 404
   ...  Fail  неможливо виконати запит на ручну синхронізацію тендеру, статус ${statusCode} ${url}
-  Log  Tender ${tenderUaId} was not found, try to sync tenders
-  izi sync tenders  ${tenderUaId}
+  Log  Tender ${tenderUaId} was not found, try to wait for sync
+  ${passed}=  Run Keyword And Return Status
+  ...           Wait Until Keyword Succeeds
+  ...             20m  1s
+  ...             izi get tender dateModified  ${tenderUaId}
+  Run Keyword Unless  ${passed}
+  ...  Fail  Couldn't find tender ${tenderUaId}
 
 izi sync plan
   [Arguments]  ${planUaId}
@@ -110,11 +115,16 @@ izi sync plan
   ${response}=  izi_service.post  ${url}
   ${statusCode}=  Get Variable Value  ${response.status_code}
   Log  Run sync plan ${planUaId}  DEBUG
-  Run Keyword And Return If  ${statusCode} < 300  Sleep  1s
+  Run Keyword And Return If  ${statusCode} < 300  Sleep  2s
   Run Keyword And Return If  ${statusCode} != 404
   ...  Fail  неможливо виконати запит на ручну синхронізацію плану, статус ${statusCode} ${url}
-  Log  Plan ${planUaId} was not found, try to sync plans
-  izi sync plans  ${planUaId}
+  Log  Plan ${planUaId} was not found, try to wait for sync
+  ${passed}=  Run Keyword And Return Status
+  ...           Wait Until Keyword Succeeds
+  ...             20m  1s
+  ...             izi get plan dateModified  ${planUaId}
+  Run Keyword Unless  ${passed}
+  ...  Fail  Couldn't find plan ${planUaId}
 
 izi sync agreement
   [Arguments]  ${agreementUaId}
@@ -122,53 +132,16 @@ izi sync agreement
   ${response}=  izi_service.post  ${url}
   ${statusCode}=  Get Variable Value  ${response.status_code}
   Log  Run sync agreement ${agreementUaId}  DEBUG
-  Run Keyword And Return If  ${statusCode} < 300  Sleep  1s
+  Run Keyword And Return If  ${statusCode} < 300  Sleep  2s
   Run Keyword And Return If  ${statusCode} != 404
   ...  Fail  неможливо виконати запит на ручну синхронізацію угоди, статус ${statusCode} ${url}
-  Log  Agreement ${agreementUaId} was not found, try to sync agreements
-  izi sync agreements  ${agreementUaId}
-
-izi sync tenders
-  [Arguments]  ${tenderUaId}  ${retry}=10
-  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/tenders/sync
-  ${response}=  izi_service.post  ${url}
-  ${statusCode}=  Get Variable Value  ${response.status_code}
-  Run Keyword And Return If  ${statusCode} != 204
-  ...  Fail  неможливо виконати запит на ручну синхронізацію тендерів, статус ${statusCode} ${url}
-  Log  Run sync tenders ${url}  DEBUG
+  Log  Agreement ${agreementUaId} was not found, try to wait for sync
   ${passed}=  Run Keyword And Return Status
   ...           Wait Until Keyword Succeeds
-  ...             ${retry} times  1 sec
-  ...             izi get tender dateModified  ${tenderUaId}
-  Run Keyword Unless  ${passed}  Log  Tenders were synced but couldn't find tender ${tenderUaId}  WARN
-
-izi sync agreements
-  [Arguments]  ${agreementUaId}  ${retry}=10
-  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/agreements/sync
-  ${response}=  izi_service.post  ${url}
-  ${statusCode}=  Get Variable Value  ${response.status_code}
-  Run Keyword And Return If  ${statusCode} != 204
-  ...  Fail  неможливо виконати запит на ручну синхронізацію угод, статус ${statusCode} ${url}
-  Log  Run sync agreements ${url}  DEBUG
-  ${passed}=  Run Keyword And Return Status
-  ...           Wait Until Keyword Succeeds
-  ...             ${retry} times  10 sec
+  ...             20m  1s
   ...             izi get agreement dateModified  ${agreementUaId}
-  Run Keyword Unless  ${passed}  Log  Agreements were synced but couldn't find agreement ${agreementUaId}  WARN
-
-izi sync plans
-  [Arguments]  ${planUaId}  ${retry}=10
-  ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/plans/sync
-  ${response}=  izi_service.post  ${url}
-  ${statusCode}=  Get Variable Value  ${response.status_code}
-  Run Keyword And Return If  ${statusCode} != 204
-  ...  Fail  неможливо виконати запит на ручну синхронізацію планів, статус ${statusCode} ${url}
-  Log  Run sync plans ${url}  DEBUG
-  ${passed}=  Run Keyword And Return Status
-  ...           Wait Until Keyword Succeeds
-  ...             ${retry} times  1 sec
-  ...             izi get plan dateModified  ${planUaId}
-  Run Keyword Unless  ${passed}  Log  Plans were synced but couldn't find plan ${planUaId}  WARN
+  Run Keyword Unless  ${passed}
+  ...  Fail  Couldn't find agreement ${agreementUaId}
 
 izi get page lots count
   ${lotsCount}=  Execute Javascript  return $('lot-tabs .lot-tabs__tab').length
