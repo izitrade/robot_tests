@@ -394,8 +394,7 @@ izi знайти на сторінці тендера поле awards[${awardInd
   ${status}=  Run Keyword And Return Status  izi claim-submit-form open form  ${awardIndex}
   Run Keyword And Return If  '${status}'=='False'  izi знайти на сторінці лоту поле award-complaintPeriod-endDate  ${tender}  ${awardIndex}
   izi dropdown select option  key=${awardId}  dropDownSelector=claims award-pretense-create award-select
-  ${value}=  Get Text  jquery=award-pretense-create form-message span
-  ${value}=  izi convert izi date to prozorro date  ${value}
+  ${value}=  Execute Javascript   return $('award-pretense-create form-message').attr('complaintPeriodEndDate')
   [Return]  ${value}
 
 izi знайти на сторінці лоту поле award-complaintPeriod-endDate
@@ -403,8 +402,7 @@ izi знайти на сторінці лоту поле award-complaintPeriod-e
   ${lotId}=  Get Variable Value  ${tender.data.awards[${awardIndex}].lotID}  ${None}
   ${lotIndex}=  izi get lotIndex by lotId  ${lotId}
   Run Keyword If  '${lotId}'!='${None}'  izi обрати лот ${lotIndex}
-  ${value}=  Execute Javascript  return $('.tender-lot-status__complain-period p:first').text().trim().split(' ').slice(-2).join(' ')
-  ${value}=  izi convert izi date to prozorro date  ${value}
+  ${value}=  Execute Javascript   return $('.tender-lot-status__complain-period p:first').attr('complaintPeriodEndDate')
   [Return]  ${value}
 
 izi знайти на сторінці тендера поле complaintPeriod.endDate
