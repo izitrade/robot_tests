@@ -15,8 +15,17 @@ izi get awardId by awardIndex
   [Return]	${awardId}
 
 izi get tender dateModified
-	${tenderIziId}=  izi знайти на сторінці тендера поле tenderIziId
-	${url}=		Set Variable	${BROKERS.izi.backendUrl}/tenders/${tenderIziId}/dateModified
+  [Arguments]   ${tenderUaId}
+	${url}=		Set Variable	${BROKERS.izi.backendUrl}/tenders/${tenderUaId}/dateModified
+	${response}=  izi_service.get  ${url}
+  ${statusCode}=	Get Variable Value  ${response.status_code}
+  Run Keyword And Return If	'${statusCode}' != '200'	Fail
+  ${dateModified}=		Get Variable Value	${response.data}
+  [Return]	${dateModified}
+
+izi get plan dateModified
+  [Arguments]   ${planUaId}
+	${url}=		Set Variable	${BROKERS.izi.backendUrl}/plans/${planUaId}/dateModified
 	${response}=  izi_service.get  ${url}
   ${statusCode}=	Get Variable Value  ${response.status_code}
   Run Keyword And Return If	'${statusCode}' != '200'	Fail
@@ -84,25 +93,46 @@ izi checkbox check change
   Sleep  50ms
 
 izi sync tenders
+  [Arguments]  ${testTenderUaId}  ${retry}=15
   ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/tenders/sync
   ${response}=  izi_service.post  ${url}
   ${statusCode}=	Get Variable Value  ${response.status_code}
-  Run Keyword If  ${statusCode} != 204  Fail  неможливо виконати запит на ручну синхронізацію тендерів, статус ${statusCode} ${url}
+  Run Keyword And Return If  ${statusCode} != 204
+  ...   Fail  неможливо виконати запит на ручну синхронізацію тендерів, статус ${statusCode} ${url}
   Log  tenders synced ${url}  WARN
+  ${status}   ${dateModified}=  Run Keyword And Ignore Error   izi get tender dateModified   ${testTenderUaId}
+  Return From Keyword If  '${status}' == 'PASS'
+  Log  tenders was synced but can't find test tender ${testTenderUaId}   WARN
+  Run Keyword And Return If   '${retry}' == '${None}'   Fail
+  Wait Until Keyword Succeeds   ${retry} times  5 sec  izi sync tenders   ${testTenderUaId}  ${None}
 
 izi sync agreements
+  [Arguments]  ${testAgreementUaId}  ${retry}=15
   ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/agreements/sync
   ${response}=  izi_service.post  ${url}
   ${statusCode}=	Get Variable Value  ${response.status_code}
-  Run Keyword If  ${statusCode} != 204  Fail  неможливо виконати запит на ручну синхронізацію угод, статус ${statusCode} ${url}
-  Log  agreement synced ${url}  WARN
+  Run Keyword And Return If  ${statusCode} != 204
+  ...   Fail  неможливо виконати запит на ручну синхронізацію угод, статус ${statusCode} ${url}
+  Log  agreements synced ${url}  WARN
+  ${status}   ${dateModified}=  Run Keyword And Ignore Error   izi get agreement dateModified   ${testAgreementUaId}
+  Return From Keyword If  '${status}' == 'PASS'
+  Log  agreements was synced but can't find test agreement ${testAgreementUaId}   WARN
+  Run Keyword And Return If   '${retry}' == '${None}'   Fail
+  Wait Until Keyword Succeeds   ${retry} times  5 sec  izi sync agreements   ${testTenderUaId}  ${None}
 
 izi sync plans
+  [Arguments]  ${testPlanUaId}  ${retry}=15
   ${url}=  Set Variable  ${BROKERS.izi.backendUrl}/plans/sync
   ${response}=  izi_service.post  ${url}
   ${statusCode}=	Get Variable Value  ${response.status_code}
-  Run Keyword If  ${statusCode} != 204  Fail  неможливо виконати запит на ручну синхронізацію планів, статус ${statusCode} ${url}
+  Run Keyword And Return If  ${statusCode} != 204
+  ...   Fail  неможливо виконати запит на ручну синхронізацію планів, статус ${statusCode} ${url}
   Log  plans synced ${url}  WARN
+  ${status}   ${dateModified}=  Run Keyword And Ignore Error   izi get plan dateModified   ${testPlanUaId}
+  Return From Keyword If  '${status}' == 'PASS'
+  Log  plans was synced but can't find test plan ${testPlanUaId}   WARN
+  Run Keyword And Return If   '${retry}' == '${None}'   Fail
+  Wait Until Keyword Succeeds   ${retry} times  5 sec  izi sync plans   ${testPlanUaId}  ${None}
 
 izi get page lots count
 	${lotsCount}=	Execute Javascript	return $('lot-tabs .lot-tabs__tab').length
@@ -149,12 +179,12 @@ izi чи я на сторінці тендеру ${tender_uaid}
 
 izi перейти на сторінку тендеру
   [Arguments]  ${tender_uaid}
-  izi sync tenders
+  izi sync tenders    ${tender_uaid}
   ${isAmOnPage}=  izi чи я на сторінці тендеру ${tender_uaid}
   Run Keyword If  '${isAmOnPage}' == 'FALSE'  izi знайти тендер та перейти на сторінку  ${tender_uaid}
   Sleep  2s
   izi bid-submit-form close submit-form by clicking X
-  ${factTenderDateModified}=  izi get tender dateModified
+  ${factTenderDateModified}=  izi get tender dateModified   ${tender_uaid}
   ${factTenderDateModified}=  Fetch From Left  ${factTenderDateModified}  .
   ${pageTenderDateModified}=  Execute Javascript  return $('tender[datemodified]').attr('datemodified')
   ${pageTenderDateModified}=  Fetch From Left  ${pageTenderDateModified}  .
@@ -1105,7 +1135,7 @@ izi підтвердити\заперечити вирішення вимоги 
   ${confirmation}=  Set Variable  ${confirmation_data.data.satisfied}
   Run Keyword If  '${confirmation}' == 'True'  Click Element  jquery=claims pretense-row .pretense-row__content-block:has(span:contains(${complaintID})) claim-satisfaction .btn_9
   ...  ELSE  Click Element  jquery=claims pretense-row .pretense-row__content-block:has(span:contains(${complaintID})) claim-satisfaction .btn_10
-  izi sync tenders
+  izi sync tenders  ${tender_uaid}
 
 izi cкасувати вимогу до лоту або закупівлі
   [Arguments]  ${tender_uaid}  ${complaintID}  ${cancellation_data}  ${award_index}=${None}
@@ -1902,7 +1932,7 @@ izi чи я на сторінці угоди ${agreement_uaid}
 
 izi перейти на сторінку угоди
   [Arguments]  ${agreement_uaid}
-  izi sync agreements
+  izi sync agreements   ${agreement_uaid}
   ${isAmOnPage}=  izi чи я на сторінці угоди ${agreement_uaid}
   Run Keyword If   '${isAmOnPage}' == 'FALSE'   Run Keywords
   ...   Go to  ${BROKERS['izi'].homepage}/agreements/${agreement_uaid}
@@ -1980,7 +2010,7 @@ izi знайти на сторінці тендера поле lots[${lotIndex}]
 
 izi перейти на сторінку плану
   [Arguments]  ${planUaId}
-  izi sync plans
+  izi sync plans  ${planUaId}
   ${isAmOnPage}=  izi чи я на сторінці плану ${planUaId}
   Run Keyword If  '${isAmOnPage}' == 'FALSE'  izi знайти план та перейти на сторінку  ${planUaId}
   Sleep  2s
