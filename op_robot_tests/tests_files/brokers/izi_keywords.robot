@@ -118,7 +118,7 @@ izi sync agreements
   Return From Keyword If  '${status}' == 'PASS'
   Log  agreements was synced but can't find test agreement ${testAgreementUaId}   WARN
   Run Keyword And Return If   '${retry}' == '${None}'   Fail
-  Wait Until Keyword Succeeds   ${retry} times  5 sec  izi sync agreements   ${testTenderUaId}  ${None}
+  Wait Until Keyword Succeeds   ${retry} times  5 sec  izi sync agreements   ${testAgreementUaId}  ${None}
 
 izi sync plans
   [Arguments]  ${testPlanUaId}  ${retry}=15
