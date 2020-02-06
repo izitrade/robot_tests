@@ -97,17 +97,20 @@ Etender:
             tender:  [0, 20]
             accelerator: 1440
         openua:
-            tender:  [1, 17]
+            tender:  [1, 35]
         openeu:
             tender:  [1, 35]
         openua_defense:
             tender:  [0, 38]
         open_competitive_dialogue:
             tender:  [0,  35]
+        open_framework:
+            tender:  [0, 35]
     keywords_file: etender
     roles:
         provider:       Etender_Provider1
         provider1:      Etender_Provider2
+        provider2:      Etender_Provider3
         tender_owner:   Etender_Owner
         viewer:         Etender_Viewer
     timeout_on_wait: 30
@@ -116,16 +119,27 @@ DZO:
         default:
             enquiry: [0, 20]
             tender:  [0, 20]
+        belowThreshold:
+            enquiry: [0, 15]
+            tender:  [0, 15]
+            accelerator: 1440
         openua:
             accelerator: 720
+            tender:  [0, 30]
+        open_competitive_dialogue:
+            tender:  [0,  10]
+        open_esco:
+            accelerator: 1440
+            enquiry: [0, 12]
             tender:  [0, 30]
     keywords_file: dzo
     roles:
         tender_owner:   DZO_Owner
         provider:       DZO_Provider
         provider1:      DZO_Provider1
+        provider2:      DZO_Provider2
         viewer:         DZO_Viewer
-    timeout_on_wait: 300
+    timeout_on_wait: 15
 b25h8:
     intervals:
         default:
@@ -165,10 +179,10 @@ tendersallbiz:
             tender:  [0, 20]
         openua:
             accelerator: 720
-            tender:  [0, 60]
+            tender:  [0, 35]
         openeu:
             accelerator: 720
-            tender:  [0, 71]
+            tender:  [0, 30]
         openua_defense:
             accelerator: 720
             tender:  [0, 71]
@@ -181,6 +195,7 @@ tendersallbiz:
         tender_owner:   allbiz_Owner
         provider:       allbiz_Provider
         provider1:      allbiz_Provider1
+        provider2:      allbiz_Provider2
         viewer:         allbiz_Viewer
     timeout_on_wait: 180
 tenderonline:
@@ -208,6 +223,7 @@ tenderonline:
         tender_owner:   tenderonline_Owner
         provider:       tenderonline_Provider
         provider1:      tenderonline_Provider1
+        provider2:      tenderonline_Provider2
         viewer:         tenderonline_Viewer
     timeout_on_wait: 180
 ztv:
@@ -261,34 +277,43 @@ PrivatMarket:
 Prom:
     intervals:
         default:
-            accelerator: 1440
-            enquiry: [4, 4]
-            tender:  [0,  30]
+            accelerator: 620
+            enquiry: [15, 60]
+            tender:  [0, 80]
         abovethresholdeu:
-            accelerator: 1440
-            tender:  [0, 50]
+            accelerator: 620
+            tender:  [0, 40]
         openeu:
-            accelerator: 1440
-            tender:  [0, 50]
+            accelerator: 620
+            tender:  [0, 60]
         openua:
-            accelerator: 1440
-            tender:  [0, 65]
+            accelerator: 620
+            tender:  [0, 70]
         belowThreshold:
-            accelerator: 1440
-            enquiry: [0, 75]
-            tender:  [0, 65]
+            accelerator: 500
+            enquiry: [0, 30]
+            tender:  [0, 30]
         negotiation:
-            accelerator: 360
-            enquiry: [0, 20]
-            tender:  [0, 20]
+            accelerator: 500
+            enquiry: [0, 50]
+            tender:  [0, 30]
         openua_defense:
-            tender:  [0, 110]
+            tender:  [0, 60]
+        esco:
+            accelerator: 620
+            enquiry: [0, 60]
+            tender:  [0, 70]
+        open_framework:
+            accelerator: 620
+            tender:  [0, 55]
     keywords_file: prom
     roles:
-        tender_owner:   Prom_Owner
-        viewer:         Prom_Viewer
-        provider:       Prom_Provider
-    timeout_on_wait: 300
+        tender_owner:    Prom_Owner
+        viewer:          Prom_Viewer
+        provider:        Prom_Provider
+        provider1:       Prom_Provider1
+        provider2:       Prom_Provider2
+    timeout_on_wait: 240
 Publicbid:
     intervals:
         default:
@@ -350,15 +375,35 @@ SmartTender:
     timeout_on_wait: 0
 uatenders:
     intervals:
-        default:
-            enquiry: [0, 20]
-            tender:  [0, 30]
+        openua:
+            accelerator: 1440
+            auction:  [0, 20]  
+            tender:  [0, 15]
+        openeu:
+            accelerator: 1440
+            auction:  [0, 25]
+            tender:  [0, 25]
+        open_framework:
+             accelerator: 1440
+             tender:  [0, 45]
+        open_esco:
+             accelerator: 1440
+             enquiry: [0, 15]
+             tender:  [0, 35]
+        belowThreshold:
+             accelerator: 1440
+             enquiry: [0, 15]
+             tender:  [0, 15]
+        framework_selection:
+             accelerator: 360
     keywords_file: uatenders
     roles:
         provider:       uatenders_Provider
+        provider1:      uatenders_Provider1
+        provider2:      uatenders_Provider2
         tender_owner:   uatenders_Owner
         viewer:         uatenders_Viewer
-    timeout_on_wait: 60
+    timeout_on_wait: 10
 ubiz:
     intervals:
         default:
