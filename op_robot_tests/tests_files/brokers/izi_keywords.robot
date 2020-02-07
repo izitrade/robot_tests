@@ -1247,9 +1247,11 @@ izi подати цінову пропозицію на тендер
   ${type}=  izi знайти на сторінці тендера поле procurementMethodType
   Run Keyword And Return If  '${type}' == 'esco'  izi подати цінову пропозицію на esco тендер  ${bid}  ${lotIndex}
   Run Keyword If  '${lotIndex}' != '${None}'  izi обрати лот ${lotIndex}
+  ${valueAmount}=  Run Keyword If  '${type}' != 'closeFrameworkAgreementSelectionUA'  Set Variable  ${bid.data.value.amount}
+  ...  ELSE  izi fix frameworkSelection valueAmount  ${bid.data.value.amount}
   izi bid-submit-form open form
   Run Keyword If  '${type}' != 'competitiveDialogueUA' and '${type}' != 'competitiveDialogueEU'
-  ...  izi bid-submit-form fill valueAmount  valueAmount=${bid.data.value.amount}
+  ...  izi bid-submit-form fill valueAmount  valueAmount=${valueAmount}
   izi bid-submit-form fill features  parameters=${bid.data.parameters}
   Run Keyword If  '${type}' != 'belowThreshold' and '${type}' != 'closeFrameworkAgreementSelectionUA'  Run Keywords
   ...  izi bid-submit-form check selfEligible
@@ -1279,6 +1281,12 @@ izi подати цінову пропозицію на esco тендер
   Sleep  1s
   izi bid-submit-form submit form
   izi bid-submit-form close submit-form by clicking X
+
+izi fix frameworkSelection valueAmount
+  [Arguments]  ${valueAmount}
+  ${valueAmount}=  convert to string  ${valueAmount}
+  ${valueAmount}=  Set Variable  ${valueAmount[:4]}
+  Run Keyword And Return  convert to number  ${valueAmount}
 
 izi bid-submit-form open form
   Click Element  jquery=bid-status .bid-status__bid-form-btn
